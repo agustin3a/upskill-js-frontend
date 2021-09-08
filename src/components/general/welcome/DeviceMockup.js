@@ -1,6 +1,6 @@
 import React from "react";
 import { Col, Row, Container, Image } from "react-bootstrap";
-import { IPhone7, Macbook, IPadPro } from "react-device-mockups";
+import { IPhone7, Macbook } from "react-device-mockups";
 import "html5-device-mockups/dist/device-mockups.min.css";
 
 function DeviceMockup() {

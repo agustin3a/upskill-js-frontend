@@ -1,4 +1,5 @@
 import React from "react";
+import welcomeBudgeImage from './welcome_budget_image.png';
 import { Image, Col, Row, Container, Button } from "react-bootstrap";
 
 function WelcomeBanner() {
@@ -21,7 +22,7 @@ function WelcomeBanner() {
               </Button>
             </Col>
             <Col className="">
-              <Image src="/welcome_budget_image.png" fluid />
+              <Image src={welcomeBudgeImage} fluid />
             </Col>
           </Row>
         </Container>

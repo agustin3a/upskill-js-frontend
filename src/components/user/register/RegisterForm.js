@@ -1,13 +1,13 @@
 import React from "react";
 import { Alert, Form, Button, Card } from "react-bootstrap";
 import { Formik } from "formik";
-import * as yup from "yup";
+import * as Yup from "yup";
 
-function SignUpForm() {
-  const schema = yup.object().shape({
-    email: yup.string().required().email(),
-    password: yup.string().required().min(8),
-    confirmPassword: yup.string().required(),
+function RegisterForm() {
+  const schema = Yup.object().shape({
+    email: Yup.string().required().email('email entered is invalid'),
+    password: Yup.string().required().min(8),
+    confirmPassword: Yup.string().required('confirm password is a required field').oneOf([Yup.ref('password'),null], 'passwords must match')
   });
 
   return (
@@ -70,7 +70,7 @@ function SignUpForm() {
                     {errors.password}
                   </Form.Control.Feedback>
                   <Form.Text id="passwordHelpBlock" muted>
-                    Your password must be 8-32 characters long, contain letters,
+                    Your password must be at least 8 characters long, contain letters,
                     numbers and at least one special character.
                   </Form.Text>
                 </Form.Group>
@@ -82,8 +82,14 @@ function SignUpForm() {
                     value={values.confirmPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    isValid={touched.confirmPassword && !errors.confirmPassword}
+                    isInvalid={touched.confirmPassword && errors.confirmPassword}
                     placeholder="Confirm password"
                   />
+                  <Form.Control.Feedback type="valid"></Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.confirmPassword}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Button variant="primary" type="submit">
                   Create account
@@ -97,4 +103,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default RegisterForm;
