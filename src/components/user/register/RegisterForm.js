@@ -36,8 +36,7 @@ function RegisterForm() {
               errors,
             }) => (
               <Form noValidate onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email address</Form.Label>
+                <Form.Floating className="mb-3">
                   <Form.Control
                     type="email"
                     name="email"
@@ -48,13 +47,13 @@ function RegisterForm() {
                     isInvalid={touched.email && errors.email}
                     placeholder="Enter email"
                   />
+                  <label htmlFor="email">Email address</label>
                   <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                   <Form.Control.Feedback type="invalid">
                     {errors.email}
                   </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Password</Form.Label>
+                </Form.Floating>
+                <Form.Floating className="mb-3">
                   <Form.Control
                     type="password"
                     name="password"
@@ -65,17 +64,16 @@ function RegisterForm() {
                     isInvalid={touched.password && errors.password}
                     placeholder="Password"
                   />
+                  <label htmlFor="password">Password</label>
                   <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                   <Form.Control.Feedback type="invalid">
                     {errors.password}
                   </Form.Control.Feedback>
                   <Form.Text id="passwordHelpBlock" muted>
-                    Your password must be at least 8 characters long, contain letters,
-                    numbers and at least one special character.
+                    Your password must be at least 8 characters long.
                   </Form.Text>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Confirm password</Form.Label>
+                </Form.Floating>
+                <Form.Floating className="mb-3">
                   <Form.Control
                     type="password"
                     name="confirmPassword"
@@ -86,11 +84,12 @@ function RegisterForm() {
                     isInvalid={touched.confirmPassword && errors.confirmPassword}
                     placeholder="Confirm password"
                   />
+                  <label htmlFor="confirmPassword">Confirm password</label>
                   <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                   <Form.Control.Feedback type="invalid">
                     {errors.confirmPassword}
                   </Form.Control.Feedback>
-                </Form.Group>
+                </Form.Floating>
                 <Button variant="primary" type="submit">
                   Create account
                 </Button>

@@ -6,7 +6,7 @@ function Navbar() {
     <>
       <BootstrapNavbar  expand="lg" bg="dark" variant="dark">
         <Container>
-          <BootstrapNavbar.Brand href="#home">
+          <BootstrapNavbar.Brand href="/">
             <img
               src="/favicon.ico"
               width="30"

@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ReactDom from 'react-dom';
-import Main from './components/Main';
+import App from './components/App';
 
-ReactDom.render(<Main />, document.getElementById("root") );
+ReactDom.render(<App />, document.getElementById("root") );

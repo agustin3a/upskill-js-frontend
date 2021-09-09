@@ -1,5 +1,6 @@
 import React from "react";
-import welcomeBudgeImage from './welcome_budget_image.png';
+import welcomeBudgeImage from "./welcome_budget_image.png";
+import { Link } from "react-router-dom";
 import { Image, Col, Row, Container, Button } from "react-bootstrap";
 
 function WelcomeBanner() {
@@ -14,12 +15,16 @@ function WelcomeBanner() {
                 Organize your budget and transfer money between other users and
                 stores safe and easy
               </h5>
-              <Button variant="primary" size="lg">
-                Create an account
-              </Button>{" "}
-              <Button variant="outline-primary" size="lg">
-                Login
-              </Button>
+              <Link to="/register">
+                <Button variant="primary" size="lg">
+                  Create an account
+                </Button>
+              </Link>{" "}
+              <Link to="login">
+                <Button variant="outline-primary" size="lg">
+                  Login
+                </Button>
+              </Link>
             </Col>
             <Col className="">
               <Image src={welcomeBudgeImage} fluid />

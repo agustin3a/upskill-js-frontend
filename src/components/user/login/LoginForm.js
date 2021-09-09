@@ -34,8 +34,7 @@ function LoginForm() {
               errors,
             }) => (
               <Form noValidate onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email address</Form.Label>
+                <Form.Floating className="mb-3">
                   <Form.Control
                     type="email"
                     name="email"
@@ -46,13 +45,13 @@ function LoginForm() {
                     isInvalid={touched.email && errors.email}
                     placeholder="Enter email"
                   />
+                  <label htmlFor="eamil">Email address</label>
                   <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                   <Form.Control.Feedback type="invalid">
                     {errors.email}
                   </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Password</Form.Label>
+                </Form.Floating>
+                <Form.Floating className="mb-3">
                   <Form.Control
                     type="password"
                     name="password"
@@ -63,14 +62,16 @@ function LoginForm() {
                     isInvalid={touched.password && errors.password}
                     placeholder="Password"
                   />
+                  <label htmlFor="password">Password</label>
                   <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                   <Form.Control.Feedback type="invalid">
                     {errors.password}
                   </Form.Control.Feedback>
-                </Form.Group>
+                </Form.Floating>
                 <Button variant="primary" type="submit">
                   Login
                 </Button>
+
               </Form>
             )}
           </Formik>

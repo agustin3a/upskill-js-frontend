@@ -8,8 +8,7 @@ function Welcome() {
     return (
         <>
             <WelcomeBanner />
-            <FeaturesBanner />
-            <DeviceMockup />
+           
         </>
     )
 }
