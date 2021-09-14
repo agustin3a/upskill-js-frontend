@@ -10,7 +10,7 @@ function WelcomeBanner() {
         <Container>
           <Row className="d-flex align-items-center">
             <Col>
-              <h1 class="display-3"> Welcome to Budget</h1>
+              <h1 className="display-3"> Welcome to Budget</h1>
               <h5 className="text-muted pb-4">
                 Organize your budget and transfer money between other users and
                 stores safe and easy
@@ -22,7 +22,7 @@ function WelcomeBanner() {
               </Link>{" "}
               <Link to="login">
                 <Button variant="outline-primary" size="lg">
-                  Login
+                  Log in
                 </Button>
               </Link>
             </Col>
