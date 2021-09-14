@@ -1,14 +1,14 @@
 import React from "react";
-import { Container, Row, Col, Image } from "react-bootstrap";
-import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
+import { Container, Col, Row } from "react-bootstrap";
 
-function Login() {
+function Register() {
   return (
     <>
       <Container className="my-2">
         <Row className="d-flex justify-content-center">
           <Col xs={12} md={6}>
-            <LoginForm />
+            <RegisterForm />
           </Col>
         </Row>
       </Container>
@@ -16,4 +16,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
