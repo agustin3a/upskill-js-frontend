@@ -20,7 +20,7 @@ function TransactionsHistoryFilter(props) {
   };
 
   return (
-    <Card className="mb-2">
+    <Card>
       <Card.Header>
         <Card.Title> Filter </Card.Title>
       </Card.Header>
