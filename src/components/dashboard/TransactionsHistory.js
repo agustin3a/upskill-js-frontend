@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import * as _ from "lodash";
-import { Col, Row, Pagination, Accordion } from "react-bootstrap";
+import { Col, Row, Pagination, Accordion, Card } from "react-bootstrap";
 import TransactionsHistoryFilter from "./TransactionsHistoryFilter";
 import TransactionItem from "./TransactionItem";
 
-function TransactionsHistory() {
+function TransactionsHistory(props) {
   // Filters variables
   const [categoriesFilter, setCategoriesFilter] = useState([]);
   const [bankAccountsFilter, setBankAccountsFilter] = useState([]);
@@ -100,47 +100,48 @@ function TransactionsHistory() {
 
   return (
     <>
-      <Accordion defaultActiveKey="0" className="my-1">
-        <Accordion.Item eventKey="0">
-          <Accordion.Header>Transactions history</Accordion.Header>
-          <Accordion.Body>
-            <Row>
-              <Col>
-                <TransactionsHistoryFilter
-                  categories={categories}
-                  bankAccounts={bankAccounts}
-                  updateCategoriesFilter={updateCategoriesFilter}
-                  updateBankAccountsFilter={updateBankAccountsFilter}
-                />
-              </Col>
-            </Row>
-            <hr></hr>
-            <Row>
-              <Col>
-                {filteredTransactionItems.map((transactionItemData) => (
-                  <TransactionItem {...transactionItemData} />
-                ))}
-              </Col>
-            </Row>
-            <Row>
-              <Col className="d-flex justify-content-center">
-                <Pagination>
-                  <Pagination.First />
-                  <Pagination.Prev />
-                  <Pagination.Item key={1} active={true}>
-                    1
-                  </Pagination.Item>
-                  <Pagination.Item key={2} active={false}>
-                    2
-                  </Pagination.Item>
-                  <Pagination.Next />
-                  <Pagination.Last />
-                </Pagination>
-              </Col>
-            </Row>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
+      <Card className="my-3">
+        <Card.Header>
+          {" "}
+          <Card.Title> {props.title} </Card.Title>{" "}
+        </Card.Header>
+        <Card.Body>
+          <Row>
+            <Col>
+              <TransactionsHistoryFilter
+                categories={categories}
+                bankAccounts={bankAccounts}
+                updateCategoriesFilter={updateCategoriesFilter}
+                updateBankAccountsFilter={updateBankAccountsFilter}
+              />
+            </Col>
+          </Row>
+          <hr></hr>
+          <Row>
+            <Col>
+              {filteredTransactionItems.map((transactionItemData) => (
+                <TransactionItem {...transactionItemData} />
+              ))}
+            </Col>
+          </Row>
+          <Row>
+            <Col className="d-flex justify-content-center">
+              <Pagination>
+                <Pagination.First />
+                <Pagination.Prev />
+                <Pagination.Item key={1} active={true}>
+                  1
+                </Pagination.Item>
+                <Pagination.Item key={2} active={false}>
+                  2
+                </Pagination.Item>
+                <Pagination.Next />
+                <Pagination.Last />
+              </Pagination>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
     </>
   );
 }

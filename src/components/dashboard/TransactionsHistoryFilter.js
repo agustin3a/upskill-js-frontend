@@ -21,9 +21,7 @@ function TransactionsHistoryFilter(props) {
 
   return (
     <Card>
-      <Card.Header>
-        <Card.Title> Filter </Card.Title>
-      </Card.Header>
+      <Card.Header>Filter</Card.Header>
       <Card.Body>
         <Form>
           <Row>

@@ -2,6 +2,8 @@ import React from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import TransactionsHistory from "./TransactionsHistory";
 import BankAccounts from "./BankAccounts";
+import Actions from "./Actions";
+import TransactionsChart from "./TransactionsChart";
 
 function Dashboard() {
   // Bank accounts
@@ -11,20 +13,20 @@ function Dashboard() {
     <Container>
       <Row>
         <Col>
-          <h1> Welcome Banner </h1>
-        </Col>
-        <Col>
-          <h1> Options </h1>
+          <Actions />
         </Col>
       </Row>
       <Row>
         <Col>
-          <BankAccounts bankAccounts={bankAccounts}/>
+          <BankAccounts bankAccounts={bankAccounts} />
+        </Col>
+        <Col>
+            <TransactionsChart />
         </Col>
       </Row>
       <Row>
         <Col>
-          <TransactionsHistory />
+          <TransactionsHistory title="Transactions history" />
         </Col>
       </Row>
     </Container>
