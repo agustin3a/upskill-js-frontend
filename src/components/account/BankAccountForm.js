@@ -1,29 +1,29 @@
 import React, { useState } from "react";
-import { Alert, Form, Button, Card, Spinner } from "react-bootstrap";
+import {
+  Alert,
+  Form,
+  Button,
+  Card,
+  Spinner,
+  FloatingLabel,
+} from "react-bootstrap";
 import { Formik } from "formik";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
-function LoginForm() {
+function BankAccountForm() {
   const [onSubmitError, setOnSubmitError] = useState(false);
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   const schema = Yup.object().shape({
-    email: Yup.string().required().email("email entered is invalid"),
-    password: Yup.string().required(),
+    name: Yup.string().required(),
+    number: Yup.string().required(),
   });
 
   const handleOnSubmit = async (values, { setSubmitting }) => {
     setOnSubmitError(false);
     await sleep(2000);
-    if (values.email === "error@test.com") {
-      setOnSubmitError({
-        message:
-          "The email address that you've entered doesn't match any account",
-      });
-    } else {
-      alert(`Login with email: ${values.email}`);
-    }
+    alert(`values: ${JSON.stringify(values)}`);
   };
 
   return (
@@ -33,15 +33,15 @@ function LoginForm() {
       )}
       <Card>
         <Card.Header>
-          <h4>Log in</h4>
+          <h4>Add bank account</h4>
         </Card.Header>
         <Card.Body>
           <Formik
             validationSchema={schema}
             onSubmit={handleOnSubmit}
             initialValues={{
-              email: "",
-              password: "",
+              name: "",
+              number: "",
             }}
           >
             {({
@@ -57,40 +57,65 @@ function LoginForm() {
               <Form noValidate onSubmit={handleSubmit}>
                 <Form.Floating className="mb-3">
                   <Form.Control
-                    type="email"
-                    name="email"
-                    value={values.email}
+                    type="text"
+                    name="name"
+                    value={values.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    isValid={touched.email && !errors.email}
-                    isInvalid={touched.email && errors.email}
-                    placeholder="Enter email"
+                    isValid={touched.name && !errors.name}
+                    isInvalid={touched.name && errors.name}
+                    placeholder="Enter account's name"
                     disabled={isSubmitting}
                   />
-                  <label htmlFor="eamil">Email address</label>
+                  <label htmlFor="name">Name</label>
                   <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                   <Form.Control.Feedback type="invalid">
-                    {errors.email}
+                    {errors.name}
                   </Form.Control.Feedback>
                 </Form.Floating>
                 <Form.Floating className="mb-3">
                   <Form.Control
-                    type="password"
-                    name="password"
-                    value={values.password}
+                    type="text"
+                    name="number"
+                    value={values.number}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    isValid={touched.password && !errors.password}
-                    isInvalid={touched.password && errors.password}
-                    placeholder="Password"
+                    isValid={touched.number && !errors.number}
+                    isInvalid={touched.number && errors.number}
+                    placeholder="Enter account's number"
                     disabled={isSubmitting}
                   />
-                  <label htmlFor="password">Password</label>
+                  <label htmlFor="number">Number</label>
                   <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                   <Form.Control.Feedback type="invalid">
-                    {errors.password}
+                    {errors.number}
                   </Form.Control.Feedback>
                 </Form.Floating>
+                <Form.Floating className="mb-3">
+                  <FloatingLabel label="Type">
+                    <Form.Select
+                      value={values.type}
+                      name="type"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isValid={touched.type && !errors.type}
+                      isInvalid={touched.type && errors.type}
+                      disabled={isSubmitting}
+                    >
+                      <option value="checking">Checking</option>
+                      <option value="savings">Savings </option>
+                      <option value="moneyMarket">Money market</option>
+                      <option value="certificate">
+                        Certificate of deposit
+                      </option>
+                    </Form.Select>
+                  </FloatingLabel>
+                  <Form.Control.Feedback type="valid"></Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">
+                    {errors.type}
+                  </Form.Control.Feedback>
+                </Form.Floating>
+
                 <Button variant="primary" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <Spinner
@@ -101,19 +126,17 @@ function LoginForm() {
                       aria-hidden="true"
                     />
                   ) : (
-                    "Log in"
+                    "Add account"
                   )}
                 </Button>
               </Form>
             )}
           </Formik>
         </Card.Body>
-        <Card.Footer>
-          Don't have an account? <Link to="register"> Create a Budget account </Link>
-        </Card.Footer>
+        <Card.Footer></Card.Footer>
       </Card>
     </>
   );
 }
 
-export default LoginForm;
+export default BankAccountForm;

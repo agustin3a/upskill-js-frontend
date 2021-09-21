@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Col, Row } from "react-bootstrap";
 import TransactionsHistory from "./TransactionsHistory";
 import BankAccounts from "./BankAccounts";
-import Actions from "./Actions";
+import QuickLinks from "./QuickLinks";
 import TransactionsChart from "./TransactionsChart";
 
 function Dashboard() {
@@ -13,7 +13,7 @@ function Dashboard() {
     <Container>
       <Row>
         <Col>
-          <Actions />
+          <QuickLinks />
         </Col>
       </Row>
       <Row>
