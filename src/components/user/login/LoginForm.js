@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Alert, Form, Button, Card, Spinner } from "react-bootstrap";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
+import AuthContext from "../../../context/auth-context";
 
 function LoginForm() {
+  const authCtx = useContext(AuthContext);
   const [onSubmitError, setOnSubmitError] = useState(false);
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const history = useHistory();
 
   const schema = Yup.object().shape({
     email: Yup.string().required().email("email entered is invalid"),
@@ -15,14 +17,11 @@ function LoginForm() {
 
   const handleOnSubmit = async (values, { setSubmitting }) => {
     setOnSubmitError(false);
-    await sleep(2000);
-    if (values.email === "error@test.com") {
-      setOnSubmitError({
-        message:
-          "The email address that you've entered doesn't match any account",
-      });
-    } else {
-      alert(`Login with email: ${values.email}`);
+    try {
+      await authCtx.login(values.email, values.password);
+      history.push("/dashboard");
+    } catch (error) {
+      setOnSubmitError({ message: 'Fail to login (' + error.code + ')'});
     }
   };
 

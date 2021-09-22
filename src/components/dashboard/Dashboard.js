@@ -21,7 +21,7 @@ function Dashboard() {
           <BankAccounts bankAccounts={bankAccounts} />
         </Col>
         <Col>
-            <TransactionsChart />
+          <TransactionsChart />
         </Col>
       </Row>
       <Row>

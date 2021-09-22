@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Alert, Spinner, Form, Button, Card } from "react-bootstrap";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useHistory  } from "react-router-dom";
+import AuthContext from '../../../context/auth-context';
 import * as Yup from "yup";
 
 function RegisterForm() {
+  const authCtx = useContext(AuthContext);
   const [onSubmitError, setOnSubmitError] = useState(false);
-
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const history = useHistory();
 
   const schema = Yup.object().shape({
     firstName: Yup.string().required("first name is a required field"),
@@ -21,15 +22,11 @@ function RegisterForm() {
 
   const handleOnSubmit = async (values, { setSubmitting }) => {
     setOnSubmitError(false);
-    await sleep(2000);
-    if (values.firstName === "error") {
-      setOnSubmitError({
-        message: "The email address you have entered is already registered",
-      });
-    } else {
-      alert(
-        `Create account: ${values.firstName} ${values.lastName}, ${values.email}`
-      );
+    try {
+      await authCtx.register(values.email, values.password);
+      history.push('/');
+    } catch (error) {
+      setOnSubmitError({ message: 'Fail to create account (' + error.code + ')'});
     }
   };
 

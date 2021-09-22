@@ -12,7 +12,7 @@ function Footer() {
                     <hr />
                     <Row>
                         <Col className="d-flex align-items-center">
-                            <span>© 2021 CAAA, Inc </span>
+                            <span>© 2021 Budget, Inc </span>
                         </Col>
                         <Col className="d-flex align-items-center justify-content-end" >
                             <FaFacebookF size={iconsSize}/>
