@@ -12,35 +12,17 @@ function Layout({ exact, path, component: Component, ...props }) {
       exact={props.exact}
       path={path}
       render={() => {
+        const matchPaths = (matchPath(path, { path: "/", exact: true, strict: true }) || matchPath(path, "/login") || matchPath(path, "/register")) ? true : false;
         const userPages = (
           <div>
             <Navbar />
-            <Row className="mb-5">
-              <Col>
-                <br />
-              </Col>
-            </Row>
             <main>
               <Component {...props} />
             </main>
           </div>
         );
-        if (
-          authCtx.currentUser &&
-          (matchPath(path, { path: "/", exact: true }) ||
-            matchPath(path, "/login") ||
-            matchPath(path, "/register"))
-        )
-          return <Redirect to="/dashboard" />;
-        if (
-          !authCtx.currentUser &&
-          !(
-            matchPath(path, { path: "/", exact: true }) ||
-            matchPath(path, "/login") ||
-            matchPath(path, "/register")
-          )
-        )
-          return <Redirect to="/" />;
+        if ( authCtx.currentUser && matchPaths) return <Redirect to="/dashboard" />;
+        if (!authCtx.currentUser && !matchPaths) return <Redirect to="/" />;
         return userPages;
       }}
     ></Route>

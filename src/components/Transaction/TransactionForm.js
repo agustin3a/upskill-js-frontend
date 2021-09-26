@@ -102,10 +102,10 @@ function TransactionForm(props) {
                       isInvalid={touched.category && errors.category}
                       disabled={isSubmitting}
                     >
-                      <option value="checking">Transfer</option>
-                      <option value="savings">Deposit </option>
-                      <option value="moneyMarket">Groceries</option>
-                      <option value="certificate">Medicine</option>
+                      <option value="trasnfer">Transfer</option>
+                      <option value="deposit">Deposit </option>
+                      <option value="groceries">Groceries</option>
+                      <option value="medicine">Medicine</option>
                     </Form.Select>
                   </FloatingLabel>
                   <Form.Control.Feedback category="valid"></Form.Control.Feedback>
@@ -143,7 +143,7 @@ function TransactionForm(props) {
                       aria-hidden="true"
                     />
                   ) : (
-                    "Add account"
+                    "Add transaction"
                   )}
                 </Button>
               </Form>

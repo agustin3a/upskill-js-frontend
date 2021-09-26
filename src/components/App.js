@@ -4,27 +4,31 @@ import AuthProvider from "../context/AuthProvider";
 import Layout from "./Layout/Layout";
 import Welcome from "./Welcome/Welcome";
 //import Footer from "./general/Footer";
-import Register from "./User/Register/Register";
-import Login from "./User/Login/Login";
-import Dashboard from "./Dashboard/Dashboard";
+import Register from "../pages/user/Register";
+import Login from "../pages/user/Login";
+import Dashboard from "../pages/dashboard/Dashboard";
 // Bank account links
-import AddBankAccount from "./Account/AddBankAccount";
-import EditBankAccount from "./Account/EditBankAccount";
+import Accounts from "../pages/account/Accounts";
+import AddBankAccount from "../pages/account/AddBankAccount";
+import EditBankAccount from "../pages/account/EditBankAccount";
 // Transaction links
-import AddTransaction from "./Transaction/AddTransaction";
-import MakeATransfer from "./Transfer/MakeATransfer";
+import AddTransaction from "../pages/transaction/AddTransaction";
+import MakeATransfer from "../pages/transfer/MakeATransfer";
+import Transactions from "../pages/transaction/Transactions";
 
 function Main() {
   return (
     <AuthProvider>
       <Switch>
-        <Layout path="/transaction/add" component={AddTransaction} />\
-        <Layout path="/transfer/add" component={MakeATransfer} />
-        <Layout path="/account/add" component={AddBankAccount} />
-        <Layout path="/dashboard" component={Dashboard} />
-        <Layout path="/register" component={Register} />
-        <Layout path="/login" component={Login} />
-        <Layout path="/" component={Welcome} />
+        <Layout exact path="/accounts" component={Accounts} />
+        <Layout exact path="/transactions" component={Transactions} />
+        <Layout exact path="/transaction/add" component={AddTransaction} />
+        <Layout exact path="/transfer/add" component={MakeATransfer} />
+        <Layout exact path="/account/add" component={AddBankAccount} />
+        <Layout exact path="/dashboard" component={Dashboard} />
+        <Layout exact path="/register" component={Register} />
+        <Layout exact path="/login" component={Login} />
+        <Layout exact path="/" component={Welcome} />
       </Switch>
     </AuthProvider>
   );

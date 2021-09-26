@@ -100,7 +100,7 @@ function TransactionsHistory(props) {
 
   return (
     <>
-      <Card className="my-3">
+      <Card className="mb-3">
         <Card.Header>
           {" "}
           <Card.Title> {props.title} </Card.Title>{" "}

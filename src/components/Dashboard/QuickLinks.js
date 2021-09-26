@@ -9,7 +9,7 @@ function QuickLinks() {
 
   return (
     <>
-      <div className="bg-light text-dark p-3 mb-3">
+      <div className="bg-light text-dark p-3 mb-3 card">
         <h3 className="display-6"> Hello, {userFullName} </h3>
         <hr />
         <Row>

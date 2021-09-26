@@ -21,28 +21,37 @@ function Navbar() {
 
   return (
     <>
-      <BootstrapNavbar expand="lg" bg="dark" variant="dark" fixed="top" className="mb-3 border-bottom border-danger border-4">
+      <BootstrapNavbar
+        expand="lg"
+        bg="dark"
+        variant="dark"
+        className="mb-3 border-bottom border-danger border-4"
+      >
         <Container>
-          <Link to={authCtx.currentUser ? "/dashboard" : "/"}>
-            <BootstrapNavbar.Brand>
-              <img
-                src="/favicon.ico"
-                width="30"
-                height="30"
-                className="d-inline-block align-top"
-                alt="React Bootstrap logo"
-              />
-              Budget
-            </BootstrapNavbar.Brand>
+          <Link
+            className="navbar-brand"
+            to={authCtx.currentUser ? "/dashboard" : "/"}
+          >
+            <img
+              src="/favicon.ico"
+              width="30"
+              height="30"
+              className="d-inline-block align-top"
+              alt="React Bootstrap logo"
+            />
+            Budget
           </Link>
           <BootstrapNavbar.Toggle />
 
           {authCtx.currentUser && (
             <>
               <Nav className="me-auto">
-                <Nav.Link href="#home">Accounts</Nav.Link>
-                <Nav.Link href="#features">Transactions</Nav.Link>
-                <Nav.Link href="#pricing">Transfer</Nav.Link>
+                <Link to="/accounts" className="nav-link">
+                  Accounts
+                </Link>
+                <Link to="/transactions" className="nav-link">
+                  Transactions
+                </Link>
               </Nav>
               <Nav className="me-right">
                 <NavDropdown
