@@ -150,7 +150,6 @@ function TransactionForm(props) {
             )}
           </Formik>
         </Card.Body>
-        <Card.Footer></Card.Footer>
       </Card>
     </>
   );

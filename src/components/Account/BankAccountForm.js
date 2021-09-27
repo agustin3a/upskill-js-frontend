@@ -133,7 +133,6 @@ function BankAccountForm() {
             )}
           </Formik>
         </Card.Body>
-        <Card.Footer></Card.Footer>
       </Card>
     </>
   );

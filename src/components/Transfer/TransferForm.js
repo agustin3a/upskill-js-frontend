@@ -247,7 +247,6 @@ function TransferForm(props) {
             </Container>
           )}
         </Card.Body>
-        <Card.Footer></Card.Footer>
       </Card>
 
       <Modal show={showConfirmationModal} onHide={handleCloseConfirmationModal}>

@@ -25,7 +25,7 @@ function Navbar() {
         expand="lg"
         bg="dark"
         variant="dark"
-        className="mb-3 border-bottom border-danger border-4"
+        className="mb-3"
       >
         <Container>
           <Link

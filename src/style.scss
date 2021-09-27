@@ -3,7 +3,16 @@
 /*********************************************/
 
 .card {
-    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    border-bottom: 5px solid #e67e22;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    
 } 
+
+nav {
+    border-bottom: 5px solid #e67e22;
+}
+
 $card-border-radius: 5px;
+$card-cap-color: white;
+$card-cap-bg: #34495e;
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
