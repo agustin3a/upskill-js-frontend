@@ -5,7 +5,7 @@ import TransactionLayout from "../../components/Transaction/TransactionLayout";
 function Transactions() {
   return (
     <TransactionLayout showActions>
-      <TransactionsHistory title="History" />
+      <TransactionsHistory title="History" showFilter={true}/>
     </TransactionLayout>
   );
 }

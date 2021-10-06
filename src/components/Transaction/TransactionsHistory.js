@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import { Col, Row, Pagination, Accordion, Card } from "react-bootstrap";
 import TransactionsHistoryFilter from "./TransactionsHistoryFilter";
 import TransactionItem from "./TransactionItem";
+import { getByDisplayValue } from "@testing-library/dom";
 
 function TransactionsHistory(props) {
   // Filters variables
@@ -106,17 +107,22 @@ function TransactionsHistory(props) {
           <Card.Title> {props.title} </Card.Title>{" "}
         </Card.Header>
         <Card.Body>
-          <Row>
-            <Col>
-              <TransactionsHistoryFilter
-                categories={categories}
-                bankAccounts={bankAccounts}
-                updateCategoriesFilter={updateCategoriesFilter}
-                updateBankAccountsFilter={updateBankAccountsFilter}
-              />
-            </Col>
-          </Row>
-          <hr></hr>
+          {props.showFilter &&
+          (
+            <div>
+              <Row>
+                <Col>
+                  <TransactionsHistoryFilter
+                    categories={categories}
+                    bankAccounts={bankAccounts}
+                    updateCategoriesFilter={updateCategoriesFilter}
+                    updateBankAccountsFilter={updateBankAccountsFilter}
+                  />
+                </Col>
+              </Row>
+              <hr></hr>
+            </div>
+          )}
           <Row>
             <Col>
               {filteredTransactionItems.map((transactionItemData) => (

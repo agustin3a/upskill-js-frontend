@@ -10,6 +10,7 @@ import {
 
 function AuthProvider(props) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const register = (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -26,6 +27,7 @@ function AuthProvider(props) {
   useEffect(() => {
     let unsubscriber = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      setLoading(false);
     });
     return unsubscriber;
   }, []);
@@ -39,7 +41,7 @@ function AuthProvider(props) {
 
   return (
     <AuthContext.Provider value={authContext}>
-      {props.children}
+      {!loading && props.children}
     </AuthContext.Provider>
   );
 }

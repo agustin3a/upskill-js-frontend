@@ -1,4 +1,5 @@
 import "../src/style.scss";
+import 'react-day-picker/lib/style.css';
 import React from "react";
 import ReactDom from "react-dom";
 import { BrowserRouter, Router } from "react-router-dom";

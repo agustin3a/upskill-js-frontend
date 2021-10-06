@@ -11,6 +11,7 @@ function QuickLinks() {
     <>
       <div className="bg-light text-dark p-3 mb-3 card">
         <h3 className="display-6"> Hello, {userFullName} </h3>
+        <h5 className="text-muted"> Thursday, September 30 </h5>
         <hr />
         <Row>
           <Col className="d-flex justify-content-center">

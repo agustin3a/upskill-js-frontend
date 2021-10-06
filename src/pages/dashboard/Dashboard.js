@@ -24,7 +24,7 @@ function Dashboard() {
         </Row>
         <Row>
           <Col>
-            <TransactionsHistory title="Latest transactions" />
+            <TransactionsHistory title="Latest transactions" showFilter={false}/>
           </Col>
         </Row>
       </Container>
