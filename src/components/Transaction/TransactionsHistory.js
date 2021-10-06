@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import * as _ from "lodash";
-import { Col, Row, Pagination, Accordion, Card } from "react-bootstrap";
+import {
+  Col,
+  Row,
+  Pagination,
+  Spinner,
+  Card,
+  Fade,
+  Collapse,
+} from "react-bootstrap";
 import TransactionsHistoryFilter from "./TransactionsHistoryFilter";
 import TransactionItem from "./TransactionItem";
 import { getByDisplayValue } from "@testing-library/dom";
 
 function TransactionsHistory(props) {
-  // Filters variables
-  const [categoriesFilter, setCategoriesFilter] = useState([]);
-  const [bankAccountsFilter, setBankAccountsFilter] = useState([]);
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   // Data
   // Categories list
@@ -57,6 +63,9 @@ function TransactionsHistory(props) {
     return transactionItems;
   };
 
+  // Filters variables
+  const [categoriesFilter, setCategoriesFilter] = useState([]);
+  const [bankAccountsFilter, setBankAccountsFilter] = useState([]);
   // Set transaction items list
   const [transactionItems, setTransactionItems] = useState(
     generateTransactionItems(10)
@@ -65,12 +74,21 @@ function TransactionsHistory(props) {
     transactionItems.slice()
   );
 
+  const [waitingForTransactions, setWaitingForTransactions] = useState(false);
+
   // Update categories and bank accounts filter functions
   const updateCategoriesFilter = (categoriesFilter) =>
     setCategoriesFilter(categoriesFilter);
 
   const updateBankAccountsFilter = (bankAccountsFilter) =>
     setBankAccountsFilter(bankAccountsFilter);
+
+  const searchByDates = async (startDate, endDate) => {
+    setWaitingForTransactions(true);
+    await sleep(3000);
+    setTransactionItems(generateTransactionItems(10));
+    setWaitingForTransactions(false);
+  };
 
   // Update transaction items list by category and bank account filters
   useEffect(() => {
@@ -97,7 +115,7 @@ function TransactionsHistory(props) {
     }
     // Update transaction items list
     setFilteredTransactionItems(newTransactionItems);
-  }, [categoriesFilter, bankAccountsFilter]);
+  }, [categoriesFilter, bankAccountsFilter, transactionItems]);
 
   return (
     <>
@@ -107,8 +125,7 @@ function TransactionsHistory(props) {
           <Card.Title> {props.title} </Card.Title>{" "}
         </Card.Header>
         <Card.Body>
-          {props.showFilter &&
-          (
+          {props.showFilter && (
             <div>
               <Row>
                 <Col>
@@ -117,35 +134,48 @@ function TransactionsHistory(props) {
                     bankAccounts={bankAccounts}
                     updateCategoriesFilter={updateCategoriesFilter}
                     updateBankAccountsFilter={updateBankAccountsFilter}
+                    searchByDates={searchByDates}
                   />
                 </Col>
               </Row>
               <hr></hr>
             </div>
           )}
-          <Row>
-            <Col>
-              {filteredTransactionItems.map((transactionItemData) => (
-                <TransactionItem {...transactionItemData} />
-              ))}
-            </Col>
-          </Row>
-          <Row>
-            <Col className="d-flex justify-content-center">
-              <Pagination>
-                <Pagination.First />
-                <Pagination.Prev />
-                <Pagination.Item key={1} active={true}>
-                  1
-                </Pagination.Item>
-                <Pagination.Item key={2} active={false}>
-                  2
-                </Pagination.Item>
-                <Pagination.Next />
-                <Pagination.Last />
-              </Pagination>
-            </Col>
-          </Row>
+          {waitingForTransactions && (
+            <Row>
+              <Col className="d-flex justify-content-center">
+                <Spinner animation="grow" variant="dark" />
+              </Col>
+            </Row>
+          )}
+
+          <Fade in={!waitingForTransactions} appear={true}>
+            <div>
+              <Row>
+                <Col>
+                  {filteredTransactionItems.map((transactionItemData) => (
+                    <TransactionItem {...transactionItemData} />
+                  ))}
+                </Col>
+              </Row>
+              <Row>
+                <Col className="d-flex justify-content-center">
+                  <Pagination>
+                    <Pagination.First />
+                    <Pagination.Prev />
+                    <Pagination.Item key={1} active={true}>
+                      1
+                    </Pagination.Item>
+                    <Pagination.Item key={2} active={false}>
+                      2
+                    </Pagination.Item>
+                    <Pagination.Next />
+                    <Pagination.Last />
+                  </Pagination>
+                </Col>
+              </Row>
+            </div>
+          </Fade>
         </Card.Body>
       </Card>
     </>

@@ -52,7 +52,7 @@ function TransactionsHistoryFilter(props) {
     let endDate = Moment(inputDateTo);
     if (initDate > endDate)
       return setSearchErrorMessage("Initial date is bigger than end date");
-    // Send dates and search transactions
+    props.searchByDates(initDate,endDate);
   };
 
   return (

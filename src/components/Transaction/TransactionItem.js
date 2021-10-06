@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import {
   FaShoppingBag,
   FaRegPlusSquare,
@@ -49,10 +50,17 @@ function TransactionItem(props) {
   };
 
   return (
-    <Card className="mb-3" border={(props.transactionType === 'Expense') ? 'danger' : 'primary'}>
-      <Card.Header className={ (props.transactionType === 'Expense') ? 'bg-danger py-1' : 'bg-primary py-1'}>
-       
-      </Card.Header>
+    <Card
+      className="mb-3"
+      border={props.transactionType === "Expense" ? "danger" : "primary"}
+    >
+      <Card.Header
+        className={
+          props.transactionType === "Expense"
+            ? "bg-danger py-1"
+            : "bg-primary py-1"
+        }
+      ></Card.Header>
       <Card.Body className="py-1">
         <Row>
           <Col>
@@ -61,19 +69,20 @@ function TransactionItem(props) {
                 {getCategoryIcon(props.category)}
               </Col>
               <Col className="text-start">
-                <span className="fs-5"> {props.targetAccountName} </span>{" "}
-                <br />
+                <span className="fs-5"> {props.targetAccountName} </span> <br />
                 <span className="fst-italic fw-bold"> Category: </span>{" "}
                 <span className="fw-normal"> {props.category} </span> <br />
                 <span className="fst-italic fw-bold"> Bank account: </span>{" "}
                 <span className="fw-normal"> {props.bankAccount} </span> <br />
                 <span className="fst-italic fw-bold"> Date: </span>{" "}
-                <span className="fw-normal"> {"09/15/2021 09:30"} </span>
+                <span className="fw-normal"> {"09/15/2021 09:30"} </span> <br />
+                <Link to="transactions">Details</Link>{" "}/{" "}
+                <Link to="transactions">Edit</Link>{" "}/{" "}
+                <Link to="transactions">Delete</Link>
               </Col>
             </Row>
           </Col>
           <Col className="d-flex align-items-end flex-column align-items-end">
-
             <h6
               className={
                 props.transactionType === "Expense"

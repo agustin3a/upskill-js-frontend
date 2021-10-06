@@ -42,7 +42,6 @@ function TransferForm(props) {
   };
 
   const handleOnConfirmationSubmit = async () => {
-    console.log(formRef.current.values);
     setShowForm(false);
     setShowConfirmationModal(false);
     setTransferSubmitted(true);
