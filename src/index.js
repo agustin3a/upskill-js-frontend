@@ -1,5 +1,13 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ReactDom from 'react-dom';
-import App from './components/App';
+import "../src/style.scss";
+import 'react-day-picker/lib/style.css';
+import React from "react";
+import ReactDom from "react-dom";
+import { BrowserRouter, Router } from "react-router-dom";
+import App from "./components/App";
 
-ReactDom.render(<App />, document.getElementById("root") );
+ReactDom.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
+  document.getElementById("root")
+);
