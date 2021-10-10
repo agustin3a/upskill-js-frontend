@@ -1,14 +1,16 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Alert, Form, Button, Card, Spinner } from "react-bootstrap";
 import { Formik } from "formik";
 import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import AuthContext from "../../../context/auth-context";
+import { useSelector } from "react-redux";
+import { useFirebase } from "react-redux-firebase";
 
 function LoginForm() {
-  const authCtx = useContext(AuthContext);
+  const firebase = useFirebase();
   const [onSubmitError, setOnSubmitError] = useState(false);
   const history = useHistory();
+  const auth = useSelector((state) => state.firebase);
 
   const schema = Yup.object().shape({
     email: Yup.string().required().email("email entered is invalid"),
@@ -16,19 +18,19 @@ function LoginForm() {
   });
 
   const handleOnSubmit = async (values, { setSubmitting }) => {
-    setOnSubmitError(false);
     try {
-      await authCtx.login(values.email, values.password);
+      setOnSubmitError(false);
+      await firebase.login({ email: values.email, password: values.password });
       history.push("/dashboard");
     } catch (error) {
-      setOnSubmitError({ message: 'Fail to login (' + error.code + ')'});
+      setOnSubmitError(true);
     }
   };
 
   return (
     <>
-      {onSubmitError && (
-        <Alert variant="danger"> {onSubmitError.message} </Alert>
+      {(auth.authError && onSubmitError) && (
+        <Alert variant="danger"> {auth.authError.message} </Alert>
       )}
       <Card>
         <Card.Header>
@@ -108,7 +110,8 @@ function LoginForm() {
           </Formik>
         </Card.Body>
         <Card.Footer>
-          Don't have an account? <Link to="register"> Create a Budget account </Link>
+          Don't have an account?{" "}
+          <Link to="register"> Create a Budget account </Link>
         </Card.Footer>
       </Card>
     </>

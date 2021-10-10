@@ -1,12 +1,14 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Alert, Spinner, Form, Button, Card } from "react-bootstrap";
 import { Formik } from "formik";
 import { Link, useHistory  } from "react-router-dom";
-import AuthContext from '../../../context/auth-context';
+import { useSelector } from "react-redux";
+import { useFirebase } from "react-redux-firebase";
 import * as Yup from "yup";
 
 function RegisterForm() {
-  const authCtx = useContext(AuthContext);
+  const firebase = useFirebase();
+  const auth = useSelector((state) => state.firebase);
   const [onSubmitError, setOnSubmitError] = useState(false);
   const history = useHistory();
 
@@ -20,20 +22,21 @@ function RegisterForm() {
       .oneOf([Yup.ref("password"), null], "passwords must match"),
   });
 
-  const handleOnSubmit = async (values, { setSubmitting }) => {
-    setOnSubmitError(false);
+  const handleOnSubmit = async (values) => {
+    let { email, password } = values;
     try {
-      await authCtx.register(values.email, values.password);
-      history.push('/');
+      setOnSubmitError(false);
+      await firebase.createUser({ email, password });
+      history.push("/dashboard");
     } catch (error) {
-      setOnSubmitError({ message: 'Fail to create account (' + error.code + ')'});
+      setOnSubmitError(true);
     }
   };
 
   return (
     <>
-      {onSubmitError && (
-        <Alert variant="danger"> {onSubmitError.message} </Alert>
+       {(auth.authError && onSubmitError) && (
+        <Alert variant="danger"> {auth.authError.message} </Alert>
       )}
       <Card>
         <Card.Header>

@@ -1,5 +1,5 @@
 import React from "react";
-import { ResponsivePie, Pie } from "@nivo/pie";
+import { Pie } from "@nivo/pie";
 import { Card } from "react-bootstrap";
 
 function TransactionsChart() {

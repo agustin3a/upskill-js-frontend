@@ -6,12 +6,11 @@ import {
   Pagination,
   Spinner,
   Card,
-  Fade,
-  Collapse,
+  Fade
 } from "react-bootstrap";
 import TransactionsHistoryFilter from "./TransactionsHistoryFilter";
 import TransactionItem from "./TransactionItem";
-import { getByDisplayValue } from "@testing-library/dom";
+//import { getByDisplayValue } from "@testing-library/dom";
 
 function TransactionsHistory(props) {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

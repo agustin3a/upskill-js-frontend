@@ -3,8 +3,6 @@ import { Card, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   FaShoppingBag,
-  FaRegPlusSquare,
-  FaRegMinusSquare,
   FaGift,
   FaTaxi,
   FaTv,
@@ -43,6 +41,9 @@ function TransactionItem(props) {
         break;
       case "Services":
         categoryIcon = <FaReceipt size={size} />;
+        break;
+      default:
+        categoryIcon = <FaHandHoldingUsd size={size} />;
         break;
     }
 

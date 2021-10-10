@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Table, Button, Card } from "react-bootstrap";
+import { Row, Table, Button, Card } from "react-bootstrap";
 
 function BankAccounts(props) {
   return (

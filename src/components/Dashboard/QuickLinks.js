@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Row, Col, Card } from "react-bootstrap";
+import { Button, Row, Col } from "react-bootstrap";
 import { FaPiggyBank, FaHandHoldingUsd, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 

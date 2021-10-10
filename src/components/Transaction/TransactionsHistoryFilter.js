@@ -3,10 +3,7 @@ import { Form, Card, Col, Row, Button } from "react-bootstrap";
 import Select from "react-select";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import Moment from "moment";
-import MomentLocaleUtils, {
-  formatDate,
-  parseDate,
-} from "react-day-picker/moment";
+import { formatDate, parseDate } from "react-day-picker/moment";
 
 function TransactionsHistoryFilter(props) {
   const [inputDateFrom, setInputDateFrom] = useState(Moment().startOf("month"));
@@ -52,7 +49,7 @@ function TransactionsHistoryFilter(props) {
     let endDate = Moment(inputDateTo);
     if (initDate > endDate)
       return setSearchErrorMessage("Initial date is bigger than end date");
-    props.searchByDates(initDate,endDate);
+    props.searchByDates(initDate, endDate);
   };
 
   return (

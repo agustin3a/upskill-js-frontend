@@ -3,7 +3,7 @@ import { Container, Col, Row } from "react-bootstrap";
 import TransactionsHistory from "../../components/Transaction/TransactionsHistory";
 import BankAccounts from "../../components/Account/BankAccounts";
 import QuickLinks from "../../components/Dashboard/QuickLinks";
-import TransactionsChart from "../../components/Dashboard/TransactionsChart";
+//import TransactionsChart from "../../components/Dashboard/TransactionsChart";
 
 function Dashboard() {
   // Bank accounts
