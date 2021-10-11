@@ -14,10 +14,11 @@ import {
 } from "react-icons/fa";
 
 function TransactionItem(props) {
-  const getCategoryIcon = (category) => {
+  
+  const getCategoryIcon = (categoryDescription) => {
     let size = "2em";
     let categoryIcon = <FaMoneyBillAlt size={size} />;
-    switch (category) {
+    switch (categoryDescription) {
       case "Groceries":
         categoryIcon = <FaShoppingBag size={size} />;
         break;
@@ -46,7 +47,6 @@ function TransactionItem(props) {
         categoryIcon = <FaHandHoldingUsd size={size} />;
         break;
     }
-
     return categoryIcon;
   };
 
@@ -67,18 +67,17 @@ function TransactionItem(props) {
           <Col>
             <Row>
               <Col md="auto" className="d-flex align-items-center">
-                {getCategoryIcon(props.category)}
+                {getCategoryIcon(props.categories[props.category].description)}
               </Col>
               <Col className="text-start">
                 <span className="fs-5"> {props.targetAccountName} </span> <br />
                 <span className="fst-italic fw-bold"> Category: </span>{" "}
-                <span className="fw-normal"> {props.category} </span> <br />
+                <span className="fw-normal"> {props.categories[props.category].description} </span> <br />
                 <span className="fst-italic fw-bold"> Bank account: </span>{" "}
-                <span className="fw-normal"> {props.bankAccount} </span> <br />
+                <span className="fw-normal"> {props.accounts[props.account].number} </span> <br />
                 <span className="fst-italic fw-bold"> Date: </span>{" "}
-                <span className="fw-normal"> {"09/15/2021 09:30"} </span> <br />
+                <span className="fw-normal"> {props.date.toString()} </span> <br />
                 <Link to="transactions">Details</Link>{" "}/{" "}
-                <Link to="transactions">Edit</Link>{" "}/{" "}
                 <Link to="transactions">Delete</Link>
               </Col>
             </Row>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Card, Col, Row, Button } from "react-bootstrap";
 import Select from "react-select";
 import DayPickerInput from "react-day-picker/DayPickerInput";
@@ -10,12 +10,13 @@ function TransactionsHistoryFilter(props) {
   const [inputDateTo, setInputDateTo] = useState(Moment().endOf("month"));
   const [searchErrorMessage, setSearchErrorMessage] = useState();
 
-  const displayCategories = props.categories.map((category) => {
-    return { value: category, label: category };
+
+  const categoriesSelect = props.categories.map((category) => {
+    return { value: category.id, label: category.description };
   });
 
-  const displayBankAccounts = props.bankAccounts.map((bankAccount) => {
-    return { value: bankAccount, label: bankAccount };
+  const accountsSelect = props.accounts.map((account) => {
+    return { value: account.id, label: account.number + ' - ' + account.name };
   });
 
   const displayTransactionType = [
@@ -107,10 +108,10 @@ function TransactionsHistoryFilter(props) {
           <Row>
             <Col>
               <Form.Group className="mb-3" controlId="formAccountsFilter">
-                <Form.Label>Bank Accounts</Form.Label>
+                <Form.Label>Accounts</Form.Label>
                 <Select
-                  name="bankAccounts"
-                  options={displayBankAccounts}
+                  name="accounts"
+                  options={accountsSelect}
                   className="basic-multi-select"
                   classNamePrefix="select"
                   onChange={onChangeBankAccountFilter}
@@ -123,7 +124,7 @@ function TransactionsHistoryFilter(props) {
                 <Form.Label>Categories</Form.Label>
                 <Select
                   name="categories"
-                  options={displayCategories}
+                  options={categoriesSelect}
                   className="basic-multi-select"
                   classNamePrefix="select"
                   onChange={onChangeCategoryFilter}
