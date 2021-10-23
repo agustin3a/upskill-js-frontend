@@ -67,14 +67,14 @@ function TransactionItem(props) {
           <Col>
             <Row>
               <Col md="auto" className="d-flex align-items-center">
-                {getCategoryIcon(props.categories[props.category].description)}
+                {getCategoryIcon(props.category)}
               </Col>
               <Col className="text-start">
                 <span className="fs-5"> {props.targetAccountName} </span> <br />
                 <span className="fst-italic fw-bold"> Category: </span>{" "}
-                <span className="fw-normal"> {props.categories[props.category].description} </span> <br />
+                <span className="fw-normal"> {props.category} </span> <br />
                 <span className="fst-italic fw-bold"> Bank account: </span>{" "}
-                <span className="fw-normal"> {props.accounts[props.account].number} </span> <br />
+                <span className="fw-normal"> {props.account} </span> <br />
                 <span className="fst-italic fw-bold"> Date: </span>{" "}
                 <span className="fw-normal"> {props.date.toString()} </span> <br />
                 <Link to="transactions">Details</Link>{" "}/{" "}

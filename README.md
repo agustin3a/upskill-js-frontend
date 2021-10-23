@@ -2,6 +2,21 @@
 
 Application designed to organize your budget and transfer money between other users and stores. This project is built using React and was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Configuration
+
+### Firebase
+
+Create an .env.local file with the firebase credentials.
+
+Example:
+
+
+## Installation
+
+Install packages:
+
+npm install
+
 ## Available Scripts
 
 In the project directory, you can run:

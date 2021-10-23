@@ -19,7 +19,7 @@ import Dashboard from "../pages/dashboard/Dashboard";
 // Bank account links
 import Accounts from "../pages/account/Accounts";
 import AddBankAccount from "../pages/account/AddBankAccount";
-//import EditBankAccount from "../pages/account/EditBankAccount";
+import EditBankAccount from "../pages/account/EditBankAccount"
 // Transaction links
 import AddTransaction from "../pages/transaction/AddTransaction";
 import MakeATransfer from "../pages/transfer/MakeATransfer";
@@ -52,6 +52,7 @@ function Main() {
           <Layout exact path="/transaction/add" component={AddTransaction} />
           <Layout exact path="/transfer/add" component={MakeATransfer} />
           <Layout exact path="/account/add" component={AddBankAccount} />
+          <Layout exact path="/account/edit/:id" component={EditBankAccount} />
           <Layout exact path="/dashboard" component={Dashboard} />
           <Layout exact path="/register" component={Register} />
           <Layout exact path="/login" component={Login} />

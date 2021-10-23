@@ -13,56 +13,51 @@ import AlertAPIError from "../Alert/AlertAPIError";
 import LoadingAPICall from "../Loading/LoadingAPICall";
 import AccountDetails from "./AccountDetails";
 import * as accountActionsCreators from "../../state/actions/accountActions";
-import * as currencyActionCreators from "../../state/actions/currencyActions";
 import * as accountTypeActionCreators from "../../state/actions/accountTypeActions";
 import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
-function BankAccountForm() {
+function BankAccountEditForm({ accountId }) {
   const dispatch = useDispatch();
 
+  // Control variables
+  const [updateAccountInProgress, setUpdateAccountInProgress] = useState(false);
+
   // States
-  const currencyState = useSelector((state) => state.currency);
   const accountTypeState = useSelector((state) => state.accountType);
   const accountState = useSelector((state) => state.account);
 
   // Actions
-  const { getCurrencies } = bindActionCreators(
-    currencyActionCreators,
-    dispatch
-  );
   const { getAccountTypes } = bindActionCreators(
     accountTypeActionCreators,
     dispatch
   );
-  const { createAccount, resetAPIFlags } = bindActionCreators(
+  const { getAccount, updateAccount, resetAPIFlags } = bindActionCreators(
     accountActionsCreators,
     dispatch
   );
 
   // Data
-  const currencies = useSelector((state) => state.currency.currencies);
   const accountTypes = useSelector((state) => state.accountType.accountTypes);
   const currentAccount = useSelector((state) => state.account.currentAccount);
 
   useEffect(() => {
-    getCurrencies();
-    getAccountTypes();
     resetAPIFlags();
+    getAccountTypes();
+    getAccount(accountId);
   }, []);
 
   const schema = Yup.object().shape({
     holder: Yup.string().required(),
     number: Yup.string().required(),
     bank: Yup.string().required(),
-    balance: Yup.number().required().min(0),
   });
 
   const handleOnSubmit = async (values) => {
-    console.log(values);
-    createAccount(values);
+    updateAccount(accountId,values);
+    setUpdateAccountInProgress(true);
   };
 
   return (
@@ -72,40 +67,36 @@ function BankAccountForm() {
       )}
       <Card>
         <Card.Header>
-          <h4>Add bank account</h4>
+          <h4>Edit bank account</h4>
         </Card.Header>
         <Card.Body>
-          {accountState.apiCallInProgress && <LoadingAPICall />}
-          {accountState.apiCallCompleted && (
-            <AccountDetails account={currentAccount} title="Account added" />
+          {accountState.apiCallInProgress && updateAccountInProgress && (
+            <LoadingAPICall />
           )}
-         
-          {(currencyState.apiCallError || accountTypeState.apiCallError) && (
-            <AlertAPIError />
+          {accountState.apiCallCompleted && updateAccountInProgress && (
+            <AccountDetails account={currentAccount} title="Account updated" />
           )}
-          {(currencyState.apiCallInProgress ||
-            accountTypeState.apiCallInProgress) && (
+
+          {accountTypeState.apiCallError && <AlertAPIError />}
+          {accountTypeState.apiCallInProgress && (
             <Row>
               <Col className="d-flex justify-content-center">
                 <Spinner animation="grow" variant="dark" />
               </Col>
             </Row>
           )}
-          {currencyState.apiCallCompleted &&
-            accountTypeState.apiCallCompleted &&
-            !(
-              accountState.apiCallInProgress || accountState.apiCallCompleted
-            ) && (
+          {accountTypeState.apiCallCompleted &&
+            accountState.apiCallCompleted &&
+            !updateAccountInProgress && (
               <Formik
                 validationSchema={schema}
                 onSubmit={handleOnSubmit}
                 initialValues={{
-                  holder: "",
-                  number: "",
-                  bank: "",
-                  balance: 0,
-                  account_type_id: accountTypes[0].id,
-                  currency_id: currencies[0].id
+                  holder: currentAccount.holder,
+                  number: currentAccount.number,
+                  bank: currentAccount.bank,
+                  account_type_id: currentAccount.AccountType.id,
+                  active: currentAccount.active,
                 }}
               >
                 {({
@@ -174,24 +165,6 @@ function BankAccountForm() {
                       </Form.Control.Feedback>
                     </Form.Floating>
                     <Form.Floating className="mb-3">
-                      <Form.Control
-                        type="number"
-                        name="balance"
-                        value={values.balance}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        isValid={touched.balance && !errors.balance}
-                        isInvalid={touched.balance && errors.balance}
-                        placeholder="Enter account's balance"
-                        disabled={isSubmitting}
-                      />
-                      <label htmlFor="balance">Balance</label>
-                      <Form.Control.Feedback type="valid"></Form.Control.Feedback>
-                      <Form.Control.Feedback type="invalid">
-                        {errors.balance}
-                      </Form.Control.Feedback>
-                    </Form.Floating>
-                    <Form.Floating className="mb-3">
                       <FloatingLabel label="Type">
                         <Form.Select
                           value={values.account_type_id}
@@ -219,26 +192,23 @@ function BankAccountForm() {
                       </Form.Control.Feedback>
                     </Form.Floating>
                     <Form.Floating className="mb-3">
-                      <FloatingLabel label="Currency">
+                      <FloatingLabel label="Status">
                         <Form.Select
-                          value={values.currency_id}
-                          name="currency_id"
+                          value={values.active}
+                          name="active"
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          isValid={touched.currency_id && !errors.currency_id}
-                          isInvalid={touched.currency_id && errors.currency_id}
+                          isValid={touched.active && !errors.active}
+                          isInvalid={touched.active && errors.active}
                           disabled={isSubmitting}
                         >
-                          {currencies.map((currency) => (
-                            <option value={currency.id} key={currency.id}>
-                              {currency.code}
-                            </option>
-                          ))}
+                          <option value={true}>Active</option>
+                          <option value={false}>Inactive</option>
                         </Form.Select>
                       </FloatingLabel>
                       <Form.Control.Feedback type="valid"></Form.Control.Feedback>
                       <Form.Control.Feedback type="invalid">
-                        {errors.currency_id}
+                        {errors.active}
                       </Form.Control.Feedback>
                     </Form.Floating>
                     <Button
@@ -255,7 +225,7 @@ function BankAccountForm() {
                           aria-hidden="true"
                         />
                       ) : (
-                        "Add account"
+                        "Edit account"
                       )}
                     </Button>
                   </Form>
@@ -268,4 +238,4 @@ function BankAccountForm() {
   );
 }
 
-export default BankAccountForm;
+export default BankAccountEditForm;

@@ -13,6 +13,7 @@ import { useFirebase } from "react-redux-firebase";
 function Navbar() {
   const firebase = useFirebase();
   const auth = useSelector((state) => state.firebase.auth);
+  const user = useSelector((state) => state.user);
   const history = useHistory();
 
   const handleLogout = async (e) => {

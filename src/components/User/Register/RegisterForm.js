@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { Alert, Spinner, Form, Button, Card } from "react-bootstrap";
 import { Formik } from "formik";
-import { Link, useHistory  } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
 import { useFirebase } from "react-redux-firebase";
+import { useSelector, useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as userActionCreators from "../../../state/actions/userActions";
 import * as Yup from "yup";
 
 function RegisterForm() {
   const firebase = useFirebase();
   const auth = useSelector((state) => state.firebase);
   const [onSubmitError, setOnSubmitError] = useState(false);
+  const userState = useSelector((state) => state.user);
   const history = useHistory();
+  const dispatch = useDispatch();
+  const { createUser } = bindActionCreators(userActionCreators, dispatch);
 
   const schema = Yup.object().shape({
     firstName: Yup.string().required("first name is a required field"),
@@ -23,11 +28,9 @@ function RegisterForm() {
   });
 
   const handleOnSubmit = async (values) => {
-    let { email, password } = values;
     try {
       setOnSubmitError(false);
-      await firebase.createUser({ email, password });
-      history.push("/dashboard");
+      createUser(values, () => history.push("/dashboard"));
     } catch (error) {
       setOnSubmitError(true);
     }
@@ -35,7 +38,7 @@ function RegisterForm() {
 
   return (
     <>
-       {(auth.authError && onSubmitError) && (
+      {auth.authError && (
         <Alert variant="danger"> {auth.authError.message} </Alert>
       )}
       <Card>
@@ -173,7 +176,7 @@ function RegisterForm() {
           </Formik>
         </Card.Body>
         <Card.Footer>
-          Do you already have an account? <Link to="login">  Log in  </Link>
+          Do you already have an account? <Link to="login"> Log in </Link>
         </Card.Footer>
       </Card>
     </>
