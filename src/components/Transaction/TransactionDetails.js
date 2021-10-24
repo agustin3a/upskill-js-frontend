@@ -3,7 +3,7 @@ import { FaCheckCircle, FaPlus, FaListUl } from "react-icons/fa";
 import { Row, Col, Button, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-function AccountDetails({ title, account }) {
+function TransactionDetails({ title, transaction }) {
   return (
     <>
       <Row>
@@ -19,47 +19,42 @@ function AccountDetails({ title, account }) {
         <Col>
           <span>
             {" "}
-            <strong> Holder: </strong>{" "}
+            <strong> Account: </strong>{" "}
           </span>
-          <p> {account.holder} </p>
+          <p> { transaction.Account ? `${transaction.Account.number} / ${transaction.Account.holder}` : ""} </p>
           <span>
             {" "}
-            <strong> Bank: </strong>{" "}
+            <strong> Transaction type: </strong>{" "}
           </span>
-          <p> {account.bank} </p>
+          <p> {transaction.expense ? 'Expense' : 'Income'} </p>
           <span>
             {" "}
-            <strong> Number: </strong>{" "}
+            <strong> Recipient/Sender: </strong>{" "}
           </span>
-          <p> {account.number} </p>
+          <p> {transaction.recipient} </p>
           <span>
             {" "}
-            <strong> Type: </strong>{" "}
+            <strong> Transaction date: </strong>{" "}
           </span>
-          <p> {account.AccountType ? account.AccountType.description : ""} </p>
+          <p> {transaction.transaction_date} </p>
           <span>
             {" "}
-            <strong> Currency: </strong>{" "}
+            <strong> Category: </strong>{" "}
           </span>
-          <p> {account.Currency ? account.Currency.code : ""} </p>
+          <p> { transaction.Category ? transaction.Category.description : ""} </p>
           <span>
             {" "}
-            <strong> Balance: </strong>{" "}
+            <strong> Amount: </strong>{" "}
           </span>
-          <p> {account.balance} </p>
-          <span>
-            {" "}
-            <strong> Status: </strong>{" "}
-          </span>
-          <p> {account.active ? "Active" : "Inactive"} </p>
+          <p> { transaction.Currency ? `${transaction.Currency.code} ${transaction.amount}` : ""} </p>
         </Col>
       </Row>
       <hr />
       <Row>
         <Col className="d-flex justify-content-center my-2">
-          <Link to="/accounts">
+          <Link to="/transactions">
             <Button className="m-1">
-              <FaListUl /> Check your accounts
+              <FaListUl /> Check your transactions
             </Button>
           </Link>
         </Col>
@@ -68,4 +63,4 @@ function AccountDetails({ title, account }) {
   );
 }
 
-export default AccountDetails;
+export default TransactionDetails;

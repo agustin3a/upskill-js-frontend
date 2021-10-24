@@ -16,12 +16,12 @@ function TransactionsHistoryFilter(props) {
   });
 
   const accountsSelect = props.accounts.map((account) => {
-    return { value: account.id, label: account.number + ' - ' + account.name };
+    return { value: account.id, label: account.Currency.code + ' - ' + account.number + ' / ' + account.holder };
   });
 
   const displayTransactionType = [
-    { value: "income", label: "Income" },
-    { value: "expense", label: "Expense" },
+    { value: false, label: "Income" },
+    { value: true, label: "Expense" },
   ];
 
   // Event handlers

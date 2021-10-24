@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Form,
@@ -12,7 +12,6 @@ import {
 import AlertAPIError from "../Alert/AlertAPIError";
 import LoadingAPICall from "../Loading/LoadingAPICall";
 import TransactionDetails from "./TransactionDetails";
-import * as accountActionsCreators from "../../state/actions/accountActions";
 import * as categoryActionCreators from "../../state/actions/categoryActions";
 import * as transactionActionCreators from "../../state/actions/transactionActions";
 import { Formik } from "formik";
@@ -20,33 +19,31 @@ import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as Yup from "yup";
 
-function TransactionForm() {
+function TransactionEditForm({ transactionId }) {
   const dispatch = useDispatch();
+  // Control variables
+  const [updateTransactionInProgress, setUpdateTransactionInProgress] =
+    useState(false);
 
   // States
-  const accountState = useSelector((state) => state.account);
   const transactionState = useSelector((state) => state.transaction);
   const categoryState = useSelector((state) => state.category);
 
   // Actions
-  const { resetAPIFlags, createTransaction } = bindActionCreators(
-    transactionActionCreators,
-    dispatch
-  );
-  const { getAccounts } = bindActionCreators(accountActionsCreators, dispatch);
+  const { resetAPIFlags, updateTransaction, getTransaction } =
+    bindActionCreators(transactionActionCreators, dispatch);
   const { getCategories } = bindActionCreators(
     categoryActionCreators,
     dispatch
   );
 
   // Data
-  const { accounts } = accountState;
   const { categories } = categoryState;
   const { currentTransaction } = transactionState;
 
   useEffect(() => {
     resetAPIFlags();
-    getAccounts();
+    getTransaction(transactionId);
     getCategories();
   }, []);
 
@@ -57,9 +54,8 @@ function TransactionForm() {
   });
 
   const handleOnSubmit = async (values) => {
-    values.currency_id = accounts.filter((account) => account.id == values.account_id)[0].Currency.id;
-    console.log(values);
-    createTransaction(values);
+    updateTransaction(transactionId,values);
+    setUpdateTransactionInProgress(true);
   };
 
   return (
@@ -69,44 +65,41 @@ function TransactionForm() {
       )}
       <Card>
         <Card.Header>
-          <h4>Add transaction</h4>
+          <h4>Edit transaction</h4>
         </Card.Header>
         <Card.Body>
-          {transactionState.apiCallInProgress && <LoadingAPICall />}
-          {transactionState.apiCallCompleted && (
+          {transactionState.apiCallInProgress &&
+            updateTransactionInProgress && <LoadingAPICall />}
+          {transactionState.apiCallCompleted && updateTransactionInProgress && (
             <TransactionDetails
               transaction={currentTransaction}
-              title="Transaction added"
+              title="Transaction updated"
             />
           )}
 
-          {(accountState.apiCallError || categoryState.apiCallError) && (
-            <AlertAPIError />
-          )}
-          {(accountState.apiCallInProgress ||
-            categoryState.apiCallInProgress) && (
-            <Row>
-              <Col className="d-flex justify-content-center">
-                <Spinner animation="grow" variant="dark" />
-              </Col>
-            </Row>
-          )}
-          {accountState.apiCallCompleted &&
+          {(transactionState.apiCallError || categoryState.apiCallError) &&
+            !updateTransactionInProgress && <AlertAPIError />}
+          {(transactionState.apiCallInProgress ||
+            categoryState.apiCallInProgress) &&
+            !updateTransactionInProgress && (
+              <Row>
+                <Col className="d-flex justify-content-center">
+                  <Spinner animation="grow" variant="dark" />
+                </Col>
+              </Row>
+            )}
+          {transactionState.apiCallCompleted &&
             categoryState.apiCallCompleted &&
-            !(
-              transactionState.apiCallInProgress ||
-              transactionState.apiCallCompleted
-            ) && (
+            !updateTransactionInProgress && (
               <Formik
                 validationSchema={schema}
                 onSubmit={handleOnSubmit}
                 initialValues={{
-                  recipient: "",
-                  transaction_date: (new Date()).toISOString().substring(0, 10),
-                  amount: 0,
-                  account_id: accounts[0].id,
-                  category_id: categories[0].id,
-                  expense: true
+                  recipient: currentTransaction.recipient,
+                  transaction_date: currentTransaction.transaction_date ? (new Date(currentTransaction.transaction_date)).toISOString().substring(0, 10) : (new Date()).toISOString().substring(0, 10),
+                  amount: currentTransaction.amount,
+                  category_id: currentTransaction.category_id,
+                  expense: currentTransaction.expense,
                 }}
               >
                 {({
@@ -120,29 +113,6 @@ function TransactionForm() {
                   isSubmitting,
                 }) => (
                   <Form noValidate onSubmit={handleSubmit}>
-                    <Form.Floating className="mb-3">
-                      <FloatingLabel label="Account">
-                        <Form.Select
-                          value={values.account_id}
-                          name="account_id"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          isValid={touched.account_id && !errors.account_id}
-                          isInvalid={touched.account_id && errors.account_id}
-                          disabled={isSubmitting}
-                        >
-                          {accounts.filter((account) => account.active).map((account) => (
-                            <option value={account.id} key={account.id}>
-                              {`${account.Currency.code} - ${account.number}/${account.holder}`}
-                            </option>
-                          ))}
-                        </Form.Select>
-                      </FloatingLabel>
-                      <Form.Control.Feedback type="valid"></Form.Control.Feedback>
-                      <Form.Control.Feedback type="invalid">
-                        {errors.account_id}
-                      </Form.Control.Feedback>
-                    </Form.Floating>
                     <Form.Floating className="mb-3">
                       <FloatingLabel label="Transaction Type">
                         <Form.Select
@@ -187,8 +157,12 @@ function TransactionForm() {
                         value={values.transaction_date}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        isValid={touched.transaction_date && !errors.transaction_date}
-                        isInvalid={touched.transaction_date && errors.transaction_date}
+                        isValid={
+                          touched.transaction_date && !errors.transaction_date
+                        }
+                        isInvalid={
+                          touched.transaction_date && errors.transaction_date
+                        }
                         disabled={isSubmitting}
                       />
                       <label htmlFor="transaction_date">Transaction date</label>
@@ -238,7 +212,7 @@ function TransactionForm() {
                         {errors.amount}
                       </Form.Control.Feedback>
                     </Form.Floating>
-                    
+
                     <Button
                       variant="primary"
                       type="submit"
@@ -253,7 +227,7 @@ function TransactionForm() {
                           aria-hidden="true"
                         />
                       ) : (
-                        "Add transaction"
+                        "Edit transaction"
                       )}
                     </Button>
                   </Form>
@@ -266,4 +240,4 @@ function TransactionForm() {
   );
 }
 
-export default TransactionForm;
+export default TransactionEditForm;

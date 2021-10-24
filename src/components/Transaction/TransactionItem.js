@@ -14,7 +14,6 @@ import {
 } from "react-icons/fa";
 
 function TransactionItem(props) {
-  
   const getCategoryIcon = (categoryDescription) => {
     let size = "2em";
     let categoryIcon = <FaMoneyBillAlt size={size} />;
@@ -51,56 +50,44 @@ function TransactionItem(props) {
   };
 
   return (
-    <Card
-      className="mb-3"
-      border={props.transactionType === "Expense" ? "danger" : "primary"}
-    >
+    <Card className="mb-3" border={props.expense ? "danger" : "primary"}>
       <Card.Header
-        className={
-          props.transactionType === "Expense"
-            ? "bg-danger py-1"
-            : "bg-primary py-1"
-        }
+        className={props.expense ? "bg-danger py-1" : "bg-primary py-1"}
       ></Card.Header>
       <Card.Body className="py-1">
         <Row>
           <Col>
             <Row>
               <Col md="auto" className="d-flex align-items-center">
-                {getCategoryIcon(props.category)}
+                {getCategoryIcon(props.Category.description)}
               </Col>
               <Col className="text-start">
-                <span className="fs-5"> {props.targetAccountName} </span> <br />
+                <span className="fs-5"> {props.recipient} </span> <br />
                 <span className="fst-italic fw-bold"> Category: </span>{" "}
-                <span className="fw-normal"> {props.category} </span> <br />
+                <span className="fw-normal">
+                  {" "}
+                  {props.Category.description}{" "}
+                </span>{" "}
+                <br />
                 <span className="fst-italic fw-bold"> Bank account: </span>{" "}
-                <span className="fw-normal"> {props.account} </span> <br />
+                <span className="fw-normal"> {`${props.Account.number} / ${props.Account.holder}`} </span>{" "}
+                <br />
                 <span className="fst-italic fw-bold"> Date: </span>{" "}
-                <span className="fw-normal"> {props.date.toString()} </span> <br />
-                <Link to="transactions">Details</Link>{" "}/{" "}
+                <span className="fw-normal"> {props.transaction_date} </span>{" "}
+                <br />
+                <Link to={`/transaction/edit/${props.id}`}>Edit</Link> /{" "}
                 <Link to="transactions">Delete</Link>
               </Col>
             </Row>
           </Col>
           <Col className="d-flex align-items-end flex-column align-items-end">
-            <h6
-              className={
-                props.transactionType === "Expense"
-                  ? "text-danger"
-                  : "text-primary"
-              }
-            >
-              {props.transactionType}
-              {" / "}
-              {props.transactionType === "Expense" ? "Debit" : "Credit"}{" "}
+            <h6 className={props.expense ? "text-danger" : "text-primary"}>
+              {props.expense ? "Expense" : "Income"} {" / "}
+              {props.expense ? "Debit" : "Credit"}{" "}
             </h6>
-            <h6
-              className={
-                props.transactionType === "Expense"
-                  ? "text-danger"
-                  : "text-primary"
-              }
-            >{`${props.currency} ${props.amount.toFixed(2)}`}</h6>
+            <h6 className={props.expense ? "text-danger" : "text-primary"}>{`${
+              props.Currency.code
+            } ${props.amount.toFixed(2)}`}</h6>
           </Col>
         </Row>
       </Card.Body>

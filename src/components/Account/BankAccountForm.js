@@ -48,9 +48,9 @@ function BankAccountForm() {
   const currentAccount = useSelector((state) => state.account.currentAccount);
 
   useEffect(() => {
+    resetAPIFlags();
     getCurrencies();
     getAccountTypes();
-    resetAPIFlags();
   }, []);
 
   const schema = Yup.object().shape({

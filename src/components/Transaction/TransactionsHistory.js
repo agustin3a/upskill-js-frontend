@@ -62,7 +62,7 @@ function TransactionsHistory(props) {
     if (categoriesFilter && categoriesFilter.length > 0) {
       newTransactionItems = _.filter(newTransactionItems, (transactionItem) => {
         return (
-          _.findIndex(categoriesFilter, ["value", transactionItem.category]) >=
+          _.findIndex(categoriesFilter, ["value", transactionItem.Category.id]) >=
           0
         );
       });
@@ -71,7 +71,7 @@ function TransactionsHistory(props) {
     if (bankAccountsFilter && bankAccountsFilter.length > 0) {
       newTransactionItems = _.filter(newTransactionItems, (transactionItem) => {
         return (
-          _.findIndex(bankAccountsFilter, ["value", transactionItem.account]) >=
+          _.findIndex(bankAccountsFilter, ["value", transactionItem.Account.id]) >=
           0
         );
       });
