@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   Navbar as BootstrapNavbar,
   Nav,
@@ -7,16 +7,23 @@ import {
 } from "react-bootstrap";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
-import AuthContext from "../../context/auth-context";
+import { useSelector } from "react-redux";
+import { useFirebase } from "react-redux-firebase";
 
 function Navbar() {
-  const authCtx = useContext(AuthContext);
+  const firebase = useFirebase();
+  const auth = useSelector((state) => state.firebase.auth);
+  const user = useSelector((state) => state.user);
   const history = useHistory();
 
   const handleLogout = async (e) => {
     e.preventDefault();
-    authCtx.logout();
-    history.push("/");
+    try {
+      firebase.logout();
+      history.push("/");
+    } catch(error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -30,7 +37,7 @@ function Navbar() {
         <Container>
           <Link
             className="navbar-brand"
-            to={authCtx.currentUser ? "/dashboard" : "/"}
+            to={!auth.isEmpty ? "/dashboard" : "/"}
           >
             <img
               src="/favicon.ico"
@@ -43,7 +50,7 @@ function Navbar() {
           </Link>
           <BootstrapNavbar.Toggle />
 
-          {authCtx.currentUser && (
+          {!auth.isEmpty && (
             <>
               <Nav className="me-auto">
                 <Link to="/accounts" className="nav-link">
@@ -55,7 +62,7 @@ function Navbar() {
               </Nav>
               <Nav className="me-right">
                 <NavDropdown
-                  title={authCtx.currentUser && authCtx.currentUser.email}
+                  title={!auth.isEmpty && auth.email }
                   id="navbarScrollingDropdown"
                 >
                   <NavDropdown.Item href="#action3">Settings</NavDropdown.Item>
@@ -67,6 +74,7 @@ function Navbar() {
               </Nav>
             </>
           )}
+          
         </Container>
       </BootstrapNavbar>
     </>

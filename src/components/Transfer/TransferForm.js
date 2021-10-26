@@ -14,7 +14,6 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { FaCheckCircle, FaPlus, FaListUl } from "react-icons/fa";
-import { set } from "lodash";
 import { Link } from "react-router-dom";
 
 function TransferForm(props) {

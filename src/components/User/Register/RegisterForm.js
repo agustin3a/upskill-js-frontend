@@ -1,14 +1,21 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Alert, Spinner, Form, Button, Card } from "react-bootstrap";
 import { Formik } from "formik";
-import { Link, useHistory  } from "react-router-dom";
-import AuthContext from '../../../context/auth-context';
+import { Link, useHistory } from "react-router-dom";
+import { useFirebase } from "react-redux-firebase";
+import { useSelector, useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as userActionCreators from "../../../state/actions/userActions";
 import * as Yup from "yup";
 
 function RegisterForm() {
-  const authCtx = useContext(AuthContext);
+  const firebase = useFirebase();
+  const auth = useSelector((state) => state.firebase);
   const [onSubmitError, setOnSubmitError] = useState(false);
+  const userState = useSelector((state) => state.user);
   const history = useHistory();
+  const dispatch = useDispatch();
+  const { createUser } = bindActionCreators(userActionCreators, dispatch);
 
   const schema = Yup.object().shape({
     firstName: Yup.string().required("first name is a required field"),
@@ -20,20 +27,19 @@ function RegisterForm() {
       .oneOf([Yup.ref("password"), null], "passwords must match"),
   });
 
-  const handleOnSubmit = async (values, { setSubmitting }) => {
-    setOnSubmitError(false);
+  const handleOnSubmit = async (values) => {
     try {
-      await authCtx.register(values.email, values.password);
-      history.push('/');
+      setOnSubmitError(false);
+      createUser(values, () => history.push("/dashboard"));
     } catch (error) {
-      setOnSubmitError({ message: 'Fail to create account (' + error.code + ')'});
+      setOnSubmitError(true);
     }
   };
 
   return (
     <>
-      {onSubmitError && (
-        <Alert variant="danger"> {onSubmitError.message} </Alert>
+      {auth.authError && (
+        <Alert variant="danger"> {auth.authError.message} </Alert>
       )}
       <Card>
         <Card.Header>
@@ -170,7 +176,7 @@ function RegisterForm() {
           </Formik>
         </Card.Body>
         <Card.Footer>
-          Do you already have an account? <Link to="login">  Log in  </Link>
+          Do you already have an account? <Link to="login"> Log in </Link>
         </Card.Footer>
       </Card>
     </>

@@ -1,80 +1,46 @@
 import React, { useState, useEffect } from "react";
 import * as _ from "lodash";
-import {
-  Col,
-  Row,
-  Pagination,
-  Spinner,
-  Card,
-  Fade,
-  Collapse,
-} from "react-bootstrap";
+import { Col, Row, Pagination, Spinner, Card, Alert } from "react-bootstrap";
 import TransactionsHistoryFilter from "./TransactionsHistoryFilter";
 import TransactionItem from "./TransactionItem";
-import { getByDisplayValue } from "@testing-library/dom";
+import { useSelector, useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as transactionActionsCreators from "../../state/actions/transactionActions";
+import * as categoryActionsCreators from "../../state/actions/categoryActions";
+import * as accountActionsCreators from "../../state/actions/accountActions";
 
 function TransactionsHistory(props) {
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-  // Data
-  // Categories list
-  const categories = [
-    "Groceries",
-    "Entertainment",
-    "Transfer",
-    "Transport",
-    "Gifts",
-    "Medicine",
-    "Studies",
-    "Services",
-  ];
-  // Bank accounts
-  const bankAccounts = ["2342342", "2112223", "11132344"];
-
-  // Auxiliar function to generate data
-  const generateTransactionItems = (numberOfItems) => {
-    let stores = [
-      "Budget",
-      "Walmart",
-      "Apple store",
-      "Spotify",
-      "Movies",
-      "Laptop",
-      "React.js Upskill Program",
-      "Gas",
-      "Max",
-    ];
-    let transactionTypes = ["Expense", "Income"];
-    let currencies = ["USD", "GTQ"];
-    let transactionItems = [];
-    for (let i = 0; i < numberOfItems; i++) {
-      transactionItems.push({
-        transactionType:
-          transactionTypes[(Math.random() * transactionTypes.length) | 0],
-        category: categories[(Math.random() * categories.length) | 0],
-        targetAccountName: stores[(Math.random() * stores.length) | 0],
-        bankAccount: bankAccounts[(Math.random() * bankAccounts.length) | 0],
-        currency: currencies[(Math.random() * currencies.length) | 0],
-        amount: Math.random() * (i + 1) * 100,
-        date: new Date(),
-        key: i,
-      });
-    }
-    return transactionItems;
-  };
-
+  // Categories and accounts maps
+  const [categoriesMap, setCategoriesMap] = useState([]);
+  const [accountsMap, setAccountsMap] = useState([]);
   // Filters variables
   const [categoriesFilter, setCategoriesFilter] = useState([]);
   const [bankAccountsFilter, setBankAccountsFilter] = useState([]);
-  // Set transaction items list
-  const [transactionItems, setTransactionItems] = useState(
-    generateTransactionItems(10)
+  // Local filtered transaction list
+  const [filteredTransactionItems, setFilteredTransactionItems] = useState([]);
+  // Reducers
+  const transactionState = useSelector((state) => state.transaction);
+  const categoryState = useSelector((state) => state.category);
+  const accountState = useSelector((state) => state.account);
+  // Action creators
+  const dispatch = useDispatch();
+  const { getLatestTransactions } = bindActionCreators(
+    transactionActionsCreators,
+    dispatch
   );
-  const [filteredTransactionItems, setFilteredTransactionItems] = useState(
-    transactionItems.slice()
+  const { getCategories } = bindActionCreators(
+    categoryActionsCreators,
+    dispatch
+  );
+  const { getAccounts } = bindActionCreators(accountActionsCreators, dispatch);
+  // Display variables
+  const categories = useSelector((state) => state.category.categories);
+  const accounts = useSelector((state) => state.account.accounts);
+  const transactionList = useSelector(
+    (state) => state.transaction.latestTransactions
   );
 
-  const [waitingForTransactions, setWaitingForTransactions] = useState(false);
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   // Update categories and bank accounts filter functions
   const updateCategoriesFilter = (categoriesFilter) =>
@@ -83,21 +49,20 @@ function TransactionsHistory(props) {
   const updateBankAccountsFilter = (bankAccountsFilter) =>
     setBankAccountsFilter(bankAccountsFilter);
 
+  // Search transaction by date handler
   const searchByDates = async (startDate, endDate) => {
-    setWaitingForTransactions(true);
     await sleep(3000);
-    setTransactionItems(generateTransactionItems(10));
-    setWaitingForTransactions(false);
+    //setTransactionItems(generateTransactionItems(10));
   };
 
   // Update transaction items list by category and bank account filters
   useEffect(() => {
-    let newTransactionItems = transactionItems.slice();
+    let newTransactionItems = transactionList.slice();
     // Filter by categories
     if (categoriesFilter && categoriesFilter.length > 0) {
-      newTransactionItems = _.filter(transactionItems, (transactionItem) => {
+      newTransactionItems = _.filter(newTransactionItems, (transactionItem) => {
         return (
-          _.findIndex(categoriesFilter, ["value", transactionItem.category]) >=
+          _.findIndex(categoriesFilter, ["value", transactionItem.Category.id]) >=
           0
         );
       });
@@ -106,16 +71,35 @@ function TransactionsHistory(props) {
     if (bankAccountsFilter && bankAccountsFilter.length > 0) {
       newTransactionItems = _.filter(newTransactionItems, (transactionItem) => {
         return (
-          _.findIndex(bankAccountsFilter, [
-            "value",
-            transactionItem.bankAccount,
-          ]) >= 0
+          _.findIndex(bankAccountsFilter, ["value", transactionItem.Account.id]) >=
+          0
         );
       });
     }
     // Update transaction items list
     setFilteredTransactionItems(newTransactionItems);
-  }, [categoriesFilter, bankAccountsFilter, transactionItems]);
+  }, [categoriesFilter, bankAccountsFilter, transactionList]);
+
+  // Get data from API
+  useEffect(() => {
+    getLatestTransactions();
+    getCategories();
+    getAccounts();
+  }, []);
+
+  // Create maps for categories and accounts list used by the transaction item component
+  useEffect(() => {
+    let newCategoriesMap = [];
+    categories.forEach((category) => {
+      newCategoriesMap[category.id] = category;
+    });
+    setCategoriesMap(newCategoriesMap);
+    let newAccountsMap = [];
+    accounts.forEach((account) => {
+      newAccountsMap[account.id] = account;
+    });
+    setAccountsMap(newAccountsMap);
+  }, [categories, accounts]);
 
   return (
     <>
@@ -124,58 +108,83 @@ function TransactionsHistory(props) {
           {" "}
           <Card.Title> {props.title} </Card.Title>{" "}
         </Card.Header>
-        <Card.Body>
-          {props.showFilter && (
-            <div>
-              <Row>
-                <Col>
-                  <TransactionsHistoryFilter
-                    categories={categories}
-                    bankAccounts={bankAccounts}
-                    updateCategoriesFilter={updateCategoriesFilter}
-                    updateBankAccountsFilter={updateBankAccountsFilter}
-                    searchByDates={searchByDates}
-                  />
-                </Col>
-              </Row>
-              <hr></hr>
-            </div>
-          )}
-          {waitingForTransactions && (
-            <Row>
-              <Col className="d-flex justify-content-center">
-                <Spinner animation="grow" variant="dark" />
-              </Col>
-            </Row>
-          )}
 
-          <Fade in={!waitingForTransactions} appear={true}>
-            <div>
-              <Row>
-                <Col>
-                  {filteredTransactionItems.map((transactionItemData) => (
-                    <TransactionItem {...transactionItemData} />
-                  ))}
-                </Col>
-              </Row>
+        <Card.Body>
+          <section>
+            {(props.showFilter && transactionState.apiCallCompleted &&
+              categoryState.apiCallCompleted &&
+              accountState.apiCallCompleted) && (
+              <div>
+                <Row>
+                  <Col>
+                    <TransactionsHistoryFilter
+                      categories={categories}
+                      accounts={accounts}
+                      updateCategoriesFilter={updateCategoriesFilter}
+                      updateBankAccountsFilter={updateBankAccountsFilter}
+                      searchByDates={searchByDates}
+                    />
+                  </Col>
+                </Row>
+                <hr></hr>
+              </div>
+            )}
+            {(transactionState.apiCallInProgress ||
+              categoryState.apiCallInProgress ||
+              accountState.apiCallInProgress) && (
               <Row>
                 <Col className="d-flex justify-content-center">
-                  <Pagination>
-                    <Pagination.First />
-                    <Pagination.Prev />
-                    <Pagination.Item key={1} active={true}>
-                      1
-                    </Pagination.Item>
-                    <Pagination.Item key={2} active={false}>
-                      2
-                    </Pagination.Item>
-                    <Pagination.Next />
-                    <Pagination.Last />
-                  </Pagination>
+                  <Spinner animation="grow" variant="dark" />
                 </Col>
               </Row>
-            </div>
-          </Fade>
+            )}
+            {(transactionState.apiCallCompleted &&
+              categoryState.apiCallCompleted &&
+              accountState.apiCallCompleted) && (
+              <div>
+                <Row>
+                  <Col>
+                    {filteredTransactionItems.map(
+                      (transactionItemData, index) => (
+                        <TransactionItem
+                          {...transactionItemData}
+                          key={index}
+                          categories={categoriesMap}
+                          accounts={accountsMap}
+                        />
+                      )
+                    )}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="d-flex justify-content-center">
+                    <Pagination>
+                      <Pagination.First />
+                      <Pagination.Prev />
+                      <Pagination.Item key={1} active={true}>
+                        1
+                      </Pagination.Item>
+                      <Pagination.Item key={2} active={false}>
+                        2
+                      </Pagination.Item>
+                      <Pagination.Next />
+                      <Pagination.Last />
+                    </Pagination>
+                  </Col>
+                </Row>
+              </div>
+            )}
+            {(transactionState.apiCallError ||
+              categoryState.apiCallError ||
+              accountState.apiCallError) && (
+              <Alert variant="danger"  >
+                <Alert.Heading className="d-flex justify-content-center">Something went wrong on our end! :(</Alert.Heading>
+                <p className="d-flex justify-content-center">
+                  Some services are unavailabe righ now, please try again later.
+                </p>
+              </Alert>
+            )}
+          </section>
         </Card.Body>
       </Card>
     </>
