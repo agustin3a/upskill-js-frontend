@@ -15,7 +15,7 @@ function LoadingAPICall() {
         <Col>
           <h3 className="d-flex justify-content-center">
             {" "}
-            Your transfer is beign processed{" "}
+            Your transaction is beign processed{" "}
           </h3>
           <h5 className="d-flex justify-content-center text-muted">
             {" "}

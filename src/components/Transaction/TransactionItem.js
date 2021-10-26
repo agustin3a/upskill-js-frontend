@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Moment from 'moment';
 import {
   FaShoppingBag,
   FaGift,
@@ -73,10 +74,10 @@ function TransactionItem(props) {
                 <span className="fw-normal"> {`${props.Account.number} / ${props.Account.holder}`} </span>{" "}
                 <br />
                 <span className="fst-italic fw-bold"> Date: </span>{" "}
-                <span className="fw-normal"> {props.transaction_date} </span>{" "}
+                <span className="fw-normal"> {Moment(props.transaction_date).format('LL')} </span>{" "}
                 <br />
                 <Link to={`/transaction/edit/${props.id}`}>Edit</Link> /{" "}
-                <Link to="transactions">Delete</Link>
+                <Link to={`/transaction/delete/${props.id}`}>Delete</Link>
               </Col>
             </Row>
           </Col>

@@ -25,6 +25,7 @@ import AddTransaction from "../pages/transaction/AddTransaction";
 import MakeATransfer from "../pages/transfer/MakeATransfer";
 import Transactions from "../pages/transaction/Transactions";
 import EditTransaction from "../pages/transaction/EditTransaction";
+import DeleteTransaction from "../pages/transaction/DeleteTransaction";
 
 
 firebase.initializeApp({
@@ -52,6 +53,7 @@ function Main() {
           <Layout exact path="/transactions" component={Transactions} />
           <Layout exact path="/transaction/add" component={AddTransaction} />
           <Layout exact path="/transaction/edit/:id" component={EditTransaction} />
+          <Layout exact path="/transaction/delete/:id" component={DeleteTransaction} />
           <Layout exact path="/transfer/add" component={MakeATransfer} />
           <Layout exact path="/account/add" component={AddBankAccount} />
           <Layout exact path="/account/edit/:id" component={EditBankAccount} />

@@ -12,6 +12,7 @@ import {
 import AlertAPIError from "../Alert/AlertAPIError";
 import LoadingAPICall from "../Loading/LoadingAPICall";
 import TransactionDetails from "./TransactionDetails";
+import AlertSuccess from "../Alert/AlertSuccess";
 import * as accountActionsCreators from "../../state/actions/accountActions";
 import * as categoryActionCreators from "../../state/actions/categoryActions";
 import * as transactionActionCreators from "../../state/actions/transactionActions";
@@ -57,7 +58,9 @@ function TransactionForm() {
   });
 
   const handleOnSubmit = async (values) => {
-    values.currency_id = accounts.filter((account) => account.id == values.account_id)[0].Currency.id;
+    values.currency_id = accounts.filter(
+      (account) => account.id == values.account_id
+    )[0].Currency.id;
     console.log(values);
     createTransaction(values);
   };
@@ -74,10 +77,14 @@ function TransactionForm() {
         <Card.Body>
           {transactionState.apiCallInProgress && <LoadingAPICall />}
           {transactionState.apiCallCompleted && (
-            <TransactionDetails
-              transaction={currentTransaction}
-              title="Transaction added"
-            />
+            <>
+              <AlertSuccess title="Transaction added" />
+              <hr />
+              <TransactionDetails
+                transaction={currentTransaction}
+                showActions={true}
+              />
+            </>
           )}
 
           {(accountState.apiCallError || categoryState.apiCallError) && (
@@ -102,11 +109,11 @@ function TransactionForm() {
                 onSubmit={handleOnSubmit}
                 initialValues={{
                   recipient: "",
-                  transaction_date: (new Date()).toISOString().substring(0, 10),
+                  transaction_date: new Date().toISOString().substring(0, 10),
                   amount: 0,
                   account_id: accounts[0].id,
                   category_id: categories[0].id,
-                  expense: true
+                  expense: true,
                 }}
               >
                 {({
@@ -131,11 +138,13 @@ function TransactionForm() {
                           isInvalid={touched.account_id && errors.account_id}
                           disabled={isSubmitting}
                         >
-                          {accounts.filter((account) => account.active).map((account) => (
-                            <option value={account.id} key={account.id}>
-                              {`${account.Currency.code} - ${account.number}/${account.holder}`}
-                            </option>
-                          ))}
+                          {accounts
+                            .filter((account) => account.active)
+                            .map((account) => (
+                              <option value={account.id} key={account.id}>
+                                {`${account.Currency.code} - ${account.number}/${account.holder}`}
+                              </option>
+                            ))}
                         </Form.Select>
                       </FloatingLabel>
                       <Form.Control.Feedback type="valid"></Form.Control.Feedback>
@@ -187,8 +196,12 @@ function TransactionForm() {
                         value={values.transaction_date}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        isValid={touched.transaction_date && !errors.transaction_date}
-                        isInvalid={touched.transaction_date && errors.transaction_date}
+                        isValid={
+                          touched.transaction_date && !errors.transaction_date
+                        }
+                        isInvalid={
+                          touched.transaction_date && errors.transaction_date
+                        }
                         disabled={isSubmitting}
                       />
                       <label htmlFor="transaction_date">Transaction date</label>
@@ -238,7 +251,7 @@ function TransactionForm() {
                         {errors.amount}
                       </Form.Control.Feedback>
                     </Form.Floating>
-                    
+
                     <Button
                       variant="primary"
                       type="submit"

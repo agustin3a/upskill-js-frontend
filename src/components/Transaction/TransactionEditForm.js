@@ -10,6 +10,7 @@ import {
   Col,
 } from "react-bootstrap";
 import AlertAPIError from "../Alert/AlertAPIError";
+import AlertSuccess from "../Alert/AlertSuccess";
 import LoadingAPICall from "../Loading/LoadingAPICall";
 import TransactionDetails from "./TransactionDetails";
 import * as categoryActionCreators from "../../state/actions/categoryActions";
@@ -54,7 +55,7 @@ function TransactionEditForm({ transactionId }) {
   });
 
   const handleOnSubmit = async (values) => {
-    updateTransaction(transactionId,values);
+    updateTransaction(transactionId, values);
     setUpdateTransactionInProgress(true);
   };
 
@@ -71,10 +72,14 @@ function TransactionEditForm({ transactionId }) {
           {transactionState.apiCallInProgress &&
             updateTransactionInProgress && <LoadingAPICall />}
           {transactionState.apiCallCompleted && updateTransactionInProgress && (
-            <TransactionDetails
-              transaction={currentTransaction}
-              title="Transaction updated"
-            />
+            <>
+              <AlertSuccess title="Transaction updated" />
+              <hr />
+              <TransactionDetails
+                transaction={currentTransaction}
+                showActions={true}
+              />
+            </>
           )}
 
           {(transactionState.apiCallError || categoryState.apiCallError) &&
@@ -96,7 +101,11 @@ function TransactionEditForm({ transactionId }) {
                 onSubmit={handleOnSubmit}
                 initialValues={{
                   recipient: currentTransaction.recipient,
-                  transaction_date: currentTransaction.transaction_date ? (new Date(currentTransaction.transaction_date)).toISOString().substring(0, 10) : (new Date()).toISOString().substring(0, 10),
+                  transaction_date: currentTransaction.transaction_date
+                    ? new Date(currentTransaction.transaction_date)
+                        .toISOString()
+                        .substring(0, 10)
+                    : new Date().toISOString().substring(0, 10),
                   amount: currentTransaction.amount,
                   category_id: currentTransaction.category_id,
                   expense: currentTransaction.expense,

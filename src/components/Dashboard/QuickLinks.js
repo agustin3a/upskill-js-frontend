@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Row, Col } from "react-bootstrap";
 import { FaPiggyBank, FaHandHoldingUsd, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Moment from "moment";
 
 function QuickLinks() {
   const iconsSize = "1em";
@@ -11,7 +12,7 @@ function QuickLinks() {
     <>
       <div className="bg-light text-dark p-3 mb-3 card">
         <h3 className="display-6"> Hello, {userFullName} </h3>
-        <h5 className="text-muted"> Thursday, September 30 </h5>
+        <h5 className="text-muted"> { Moment().format('dddd, MMMM Do')} </h5>
         <hr />
         <Row>
           <Col className="d-flex justify-content-center">
