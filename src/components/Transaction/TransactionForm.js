@@ -13,6 +13,7 @@ import AlertAPIError from "../Alert/AlertAPIError";
 import LoadingAPICall from "../Loading/LoadingAPICall";
 import TransactionDetails from "./TransactionDetails";
 import AlertSuccess from "../Alert/AlertSuccess";
+import MissingAccountMessage from "../Account/MissingAccountMessage";
 import * as accountActionsCreators from "../../state/actions/accountActions";
 import * as categoryActionCreators from "../../state/actions/categoryActions";
 import * as transactionActionCreators from "../../state/actions/transactionActions";
@@ -98,7 +99,12 @@ function TransactionForm() {
               </Col>
             </Row>
           )}
+           {accountState.apiCallCompleted &&
+            accounts.length <= 0 && (
+              <MissingAccountMessage />
+            )}
           {accountState.apiCallCompleted &&
+            accounts.length > 0 &&
             categoryState.apiCallCompleted &&
             !(
               transactionState.apiCallInProgress ||
@@ -111,7 +117,10 @@ function TransactionForm() {
                   recipient: "",
                   transaction_date: new Date().toISOString().substring(0, 10),
                   amount: 0,
-                  account_id: accounts[0].id,
+                  account_id:
+                    accounts && accounts.length > 0
+                      ? accounts.filter((account) => account.active)[0].id
+                      : 0,
                   category_id: categories[0].id,
                   expense: true,
                 }}

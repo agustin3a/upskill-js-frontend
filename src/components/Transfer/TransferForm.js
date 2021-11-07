@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Alert,
   Form,
@@ -12,28 +12,54 @@ import {
   Col,
 } from "react-bootstrap";
 import { Formik } from "formik";
+import * as accountActionsCreators from "../../state/actions/accountActions";
+import * as transferActionsCreators from "../../state/actions/transferActions";
+import { useSelector, useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
 import * as Yup from "yup";
 import { FaCheckCircle, FaPlus, FaListUl } from "react-icons/fa";
+import MissingAccountMessage from "../Account/MissingAccountMessage";
 import { Link } from "react-router-dom";
 
 function TransferForm(props) {
-  const [transferCompleted, setTransferCompleted] = useState(false);
   const [transferSubmitted, setTransferSubmitted] = useState(false);
-  const [showForm, setShowForm] = useState(true);
-  const [onSubmitError, setOnSubmitError] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const formRef = useRef();
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const dispatch = useDispatch();
+
+  // States
+  const accountState = useSelector((state) => state.account);
+  const transferState = useSelector((state) => state.transfer);
+
+  // Actions
+  const { getAccounts } = bindActionCreators(accountActionsCreators, dispatch);
+  const { validateTransfer, resetAPIFlags, createTransfer } =
+    bindActionCreators(transferActionsCreators, dispatch);
+
+  // Data
+  const { accounts } = accountState;
+  const { transferValidate } = transferState;
+
+  useEffect(() => {
+    resetAPIFlags();
+    getAccounts();
+  }, []);
 
   const schema = Yup.object().shape({
-    amount: Yup.number().required().positive(),
-    account: Yup.string().required().email(),
+    sender_amount: Yup.number()
+      .required("Amount is a required field")
+      .min(0.01),
+    recipient_email: Yup.string()
+      .required("Recipient's email is a required field")
+      .email("Enter a valid email"),
+    recipient_account_number: Yup.string().required(
+      "Recipient's account number is a required field"
+    ),
   });
 
-  const handleOnSubmit = async (values, { setSubmitting }) => {
-    console.log(values);
-    // Verify that the account exists
+  const handleOnSubmit = async (values) => {
     setShowConfirmationModal(true);
+    validateTransfer(values);
   };
 
   const handleCloseConfirmationModal = () => {
@@ -41,230 +67,277 @@ function TransferForm(props) {
   };
 
   const handleOnConfirmationSubmit = async () => {
-    setShowForm(false);
-    setShowConfirmationModal(false);
+    console.log(formRef.current.values);
     setTransferSubmitted(true);
-    setTransferCompleted(false);
-    await sleep(4000);
-    // Submit transactions
-    setTransferCompleted(true);
+    setShowConfirmationModal(false);
+    createTransfer(formRef.current.values);
   };
 
   return (
     <>
-      {onSubmitError && (
-        <Alert variant="danger"> {onSubmitError.message} </Alert>
+      {transferState.apiCallError && (
+        <Alert variant="danger"> {transferState.apiCallErrorMessage} </Alert>
       )}
       <Card>
         <Card.Header>
           <h4>{props.title}</h4>
         </Card.Header>
         <Card.Body>
-          {showForm && (
-            <Formik
-              innerRef={formRef}
-              validationSchema={schema}
-              onSubmit={handleOnSubmit}
-              initialValues={{
-                amount: "",
-                note: "",
-                account: "",
-                currency: "USD",
-              }}
-            >
-              {({
-                handleSubmit,
-                handleChange,
-                handleBlur,
-                values,
-                touched,
-                isValid,
-                errors,
-                isSubmitting,
-              }) => (
-                <Form noValidate onSubmit={handleSubmit}>
-                  <Form.Floating className="mb-3">
-                    <Form.Control
-                      type="number"
-                      name="amount"
-                      value={values.amount}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isValid={touched.amount && !errors.amount}
-                      isInvalid={touched.amount && errors.amount}
-                      placeholder="Enter account's amount"
-                      disabled={isSubmitting}
-                    />
-                    <label htmlFor="amount">Amount</label>
-                    <Form.Control.Feedback type="valid"></Form.Control.Feedback>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.amount}
-                    </Form.Control.Feedback>
-                  </Form.Floating>
-                  <Form.Floating className="mb-3">
-                    <FloatingLabel label="Currency">
-                      <Form.Select
-                        value={values.currency}
-                        name="currency"
+          {!transferSubmitted &&
+            accountState.apiCallCompleted &&
+            accounts.length > 0 && (
+              <Formik
+                innerRef={formRef}
+                validationSchema={schema}
+                onSubmit={handleOnSubmit}
+                initialValues={{
+                  sender_amount: 0.01,
+                  recipient_email: "",
+                  recipient_account_number: "",
+                  sender_account_id:
+                    accounts && accounts.length > 0
+                      ? accounts.filter((account) => account.active)[0].id
+                      : 0,
+                }}
+              >
+                {({
+                  handleSubmit,
+                  handleChange,
+                  handleBlur,
+                  values,
+                  touched,
+                  isValid,
+                  errors,
+                  isSubmitting,
+                }) => (
+                  <Form noValidate onSubmit={handleSubmit}>
+                    <Form.Floating className="mb-3">
+                      <FloatingLabel label="Account">
+                        <Form.Select
+                          value={values.sender_account_id}
+                          name="sender_account_id"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          isValid={
+                            touched.sender_account_id &&
+                            !errors.sender_account_id
+                          }
+                          isInvalid={
+                            touched.sender_account_id &&
+                            errors.sender_account_id
+                          }
+                          disabled={isSubmitting}
+                        >
+                          {accounts
+                            .filter((account) => account.active)
+                            .map((account) => (
+                              <option value={account.id} key={account.id}>
+                                {`${account.Currency.code} - ${account.number}/${account.holder}`}
+                              </option>
+                            ))}
+                        </Form.Select>
+                      </FloatingLabel>
+                      <Form.Control.Feedback type="valid"></Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.sender_account_id}
+                      </Form.Control.Feedback>
+                    </Form.Floating>
+                    <Form.Floating className="mb-3">
+                      <Form.Control
+                        type="number"
+                        name="sender_amount"
+                        value={values.sender_amount}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        isValid={touched.currency && !errors.currency}
-                        isInvalid={touched.currency && errors.currency}
+                        isValid={touched.sender_amount && !errors.sender_amount}
+                        isInvalid={
+                          touched.sender_amount && errors.sender_amount
+                        }
+                        placeholder="Amount"
                         disabled={isSubmitting}
-                      >
-                        <option value="USD">USD</option>
-                        <option value="GTQ">GTQ </option>
-                        <option value="EUR">EUR</option>
-                      </Form.Select>
-                    </FloatingLabel>
-                    <Form.Control.Feedback currency="valid"></Form.Control.Feedback>
-                    <Form.Control.Feedback currency="invalid">
-                      {errors.currency}
-                    </Form.Control.Feedback>
-                  </Form.Floating>
-                  <Form.Floating className="mb-3">
-                    <Form.Control
-                      type="emai"
-                      name="account"
-                      value={values.account}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isValid={touched.account && !errors.account}
-                      isInvalid={touched.account && errors.account}
-                      disabled={isSubmitting}
-                    />
-                    <label htmlFor="account">
-                      Email account to transfer the money
-                    </label>
-                    <Form.Control.Feedback type="valid"></Form.Control.Feedback>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.account}
-                    </Form.Control.Feedback>
-                  </Form.Floating>
-                  <Form.Floating className="mb-3">
-                    <Form.Control
-                      type="text"
-                      name="note"
-                      as="textarea"
-                      style={{ height: "100px" }}
-                      value={values.note}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isValid={touched.note && !errors.note}
-                      isInvalid={touched.note && errors.note}
-                      placeholder="Enter account's note"
-                      disabled={isSubmitting}
-                    />
-                    <label htmlFor="note">Note</label>
-                    <Form.Control.Feedback type="valid"></Form.Control.Feedback>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.note}
-                    </Form.Control.Feedback>
-                  </Form.Floating>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
                       />
-                    ) : (
-                      "Complete transfer"
-                    )}
+                      <label htmlFor="sender_amount">Amount</label>
+                      <Form.Control.Feedback type="valid"></Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.sender_amount}
+                      </Form.Control.Feedback>
+                    </Form.Floating>
+                    <hr />
+                    <h5> Recipient information </h5>
+                    <h6 className="text-muted">
+                      The email and number account must be registered in Budget.
+                    </h6>
+                    <Form.Floating className="mb-3">
+                      <Form.Control
+                        type="email"
+                        name="recipient_email"
+                        value={values.recipient_email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        isValid={
+                          touched.recipient_email && !errors.recipient_email
+                        }
+                        isInvalid={
+                          touched.recipient_email && errors.recipient_email
+                        }
+                        disabled={isSubmitting}
+                      />
+                      <label htmlFor="recipient_email">Recipient's email</label>
+                      <Form.Control.Feedback type="valid"></Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.recipient_email}
+                      </Form.Control.Feedback>
+                    </Form.Floating>
+                    <Form.Floating className="mb-3">
+                      <Form.Control
+                        type="text"
+                        name="recipient_account_number"
+                        value={values.recipient_account_number}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        isValid={
+                          touched.recipient_account_number &&
+                          !errors.recipient_account_number
+                        }
+                        isInvalid={
+                          touched.recipient_account_number &&
+                          errors.recipient_account_number
+                        }
+                        disabled={isSubmitting}
+                      />
+                      <label htmlFor="recipient_account_number">
+                        Recipient's account number
+                      </label>
+                      <Form.Control.Feedback type="valid"></Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.recipient_account_number}
+                      </Form.Control.Feedback>
+                    </Form.Floating>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        "Complete transfer"
+                      )}
+                    </Button>
+                  </Form>
+                )}
+              </Formik>
+            )}
+
+          {!transferSubmitted &&
+            accountState.apiCallCompleted &&
+            accounts.length <= 0 && <MissingAccountMessage />}
+
+          {transferSubmitted && transferState.apiCallCompleted && (
+            <>
+              <Row>
+                <Col className="d-flex justify-content-center">
+                  <h3> Transfer complete </h3>
+                </Col>
+              </Row>
+              <Row>
+                <Col className="d-flex justify-content-center">
+                  <FaCheckCircle size="5em" color="green" />
+                </Col>
+              </Row>
+              <hr />
+              <Row>
+                <Col className="d-flex justify-content-center my-2">
+                  <Button
+                    className="mx-1"
+                    onClick={() => {
+                      setTransferSubmitted(false);
+                    }}
+                  >
+                    <FaPlus /> Make another transfer
                   </Button>
-                </Form>
-              )}
-            </Formik>
+                  <Link to="/transactions">
+                    <Button className="mx-1">
+                      <FaListUl /> Check your transactions
+                    </Button>
+                  </Link>
+                </Col>
+              </Row>
+            </>
           )}
 
-          {transferSubmitted && (
-            <Container>
-              {transferCompleted && (
-                <>
-                  <Row>
-                    <Col className="d-flex justify-content-center">
-                      <h3> Transfer complete </h3>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col className="d-flex justify-content-center">
-                      <FaCheckCircle size="5em" color="green" />
-                    </Col>
-                  </Row>
-                  <hr />
-                  <Row>
-                    <Col className="d-flex justify-content-center my-2">
-                      <Button
-                        className="mx-1"
-                        onClick={() => {
-                          setShowForm(true);
-                          setTransferSubmitted(false);
-                        }}
-                      >
-                        <FaPlus /> Make another transfer
-                      </Button>
-                      <Link to="/transactions">
-                        <Button className="mx-1">
-                          <FaListUl /> Check your transactions
-                        </Button>
-                      </Link>
-                    </Col>
-                  </Row>
-                </>
-              )}
-              {!transferCompleted && (
-                <>
-                  <Row>
-                    <Col className="d-flex justify-content-center">
-                      <Spinner animation="border" role="status" size="lg">
-                        <span className="visually-hidden">Loading...</span>
-                      </Spinner>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <h3 className="d-flex justify-content-center">
-                        {" "}
-                        Your transfer is beign processed{" "}
-                      </h3>
-                      <h5 className="d-flex justify-content-center text-muted">
-                        {" "}
-                        Please don't close this window until the process is
-                        finished
-                      </h5>
-                    </Col>
-                  </Row>
-                </>
-              )}
-            </Container>
+          {transferSubmitted && transferState.apiCallInProgress && (
+            <>
+              <Row>
+                <Col className="d-flex justify-content-center">
+                  <Spinner animation="border" role="status" size="lg">
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <h3 className="d-flex justify-content-center">
+                    {" "}
+                    Your transfer is beign processed{" "}
+                  </h3>
+                  <h5 className="d-flex justify-content-center text-muted">
+                    {" "}
+                    Please don't close this window until the process is finished
+                  </h5>
+                </Col>
+              </Row>
+            </>
           )}
         </Card.Body>
       </Card>
 
-      <Modal show={showConfirmationModal} onHide={handleCloseConfirmationModal}>
+      <Modal
+        show={transferState.apiCallCompleted && showConfirmationModal}
+        onHide={handleCloseConfirmationModal}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Confirm transfer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="fw-bold mb-1"> Transfer to:</p>
+          <p className="fw-bold mb-1"> Debit from:</p>
           <p>
-            {" "}
-            Carlos Aguilar
-            {formRef.current && ` <${formRef.current.values.account}>`}
+            {transferValidate.sender_account
+              ? `${transferValidate.sender_account.Currency.code} - ${transferValidate.sender_account.number} / ${transferValidate.sender_account.holder}`
+              : ""}
           </p>
-          <p className="fw-bold  mb-1"> Amount: </p>
+          <p className="fw-bold mb-1"> Destination account:</p>
           <p>
-            {formRef.current &&
-              ` ${formRef.current.values.currency} ${formRef.current.values.amount}`}
+            {transferValidate.recipient_account
+              ? `${transferValidate.recipient_account.Currency.code} - ${transferValidate.recipient_account.number} / ${transferValidate.recipient_account.holder}`
+              : ""}
           </p>
-          <p className="fw-bold  mb-1"> Notes: </p>
-          <p> {formRef.current && ` ${formRef.current.values.note}`}</p>
+
+          <p className="fw-bold  mb-1"> Debit amount: </p>
+          <p>
+            {transferValidate.sender_account
+              ? `${transferValidate.sender_account.Currency.code} ${transferValidate.sender_amount}`
+              : ""}
+          </p>
+          <p className="fw-bold  mb-1"> Credit amount: </p>
+          <p>
+            {transferValidate.recipient_account &&
+            transferValidate.sender_account
+              ? `${transferValidate.recipient_account.Currency.code} ${transferValidate.recipient_amount}`
+              : ""}
+          </p>
+          {transferValidate.exchangeRateApplied && (
+            <>
+              <p className="fw-bold  mb-1"> Exchange rate: </p>
+              <p>{transferValidate.exchangeRate}</p>
+            </>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleCloseConfirmationModal}>

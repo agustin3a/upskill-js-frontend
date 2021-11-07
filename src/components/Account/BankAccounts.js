@@ -65,7 +65,9 @@ function BankAccounts(props) {
                       <td className="align-middle"> {account.balance}</td>
                       <td className="align-middle">
                         {" "}
+                        <strong className={account.active ? "text-success" : "text-danger"}>
                         {account.active ? "Active" : "Inactive"}{" "}
+                        </strong>
                       </td>
                       <td>
                         <Link to={"/account/edit/" + account.id}>

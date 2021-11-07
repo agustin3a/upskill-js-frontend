@@ -62,8 +62,10 @@ function TransactionsHistory(props) {
     if (categoriesFilter && categoriesFilter.length > 0) {
       newTransactionItems = _.filter(newTransactionItems, (transactionItem) => {
         return (
-          _.findIndex(categoriesFilter, ["value", transactionItem.Category.id]) >=
-          0
+          _.findIndex(categoriesFilter, [
+            "value",
+            transactionItem.Category.id,
+          ]) >= 0
         );
       });
     }
@@ -71,8 +73,10 @@ function TransactionsHistory(props) {
     if (bankAccountsFilter && bankAccountsFilter.length > 0) {
       newTransactionItems = _.filter(newTransactionItems, (transactionItem) => {
         return (
-          _.findIndex(bankAccountsFilter, ["value", transactionItem.Account.id]) >=
-          0
+          _.findIndex(bankAccountsFilter, [
+            "value",
+            transactionItem.Account.id,
+          ]) >= 0
         );
       });
     }
@@ -111,24 +115,25 @@ function TransactionsHistory(props) {
 
         <Card.Body>
           <section>
-            {(props.showFilter && transactionState.apiCallCompleted &&
+            {props.showFilter &&
+              transactionState.apiCallCompleted &&
               categoryState.apiCallCompleted &&
-              accountState.apiCallCompleted) && (
-              <div>
-                <Row>
-                  <Col>
-                    <TransactionsHistoryFilter
-                      categories={categories}
-                      accounts={accounts}
-                      updateCategoriesFilter={updateCategoriesFilter}
-                      updateBankAccountsFilter={updateBankAccountsFilter}
-                      searchByDates={searchByDates}
-                    />
-                  </Col>
-                </Row>
-                <hr></hr>
-              </div>
-            )}
+              accountState.apiCallCompleted && (
+                <div>
+                  <Row>
+                    <Col>
+                      <TransactionsHistoryFilter
+                        categories={categories}
+                        accounts={accounts}
+                        updateCategoriesFilter={updateCategoriesFilter}
+                        updateBankAccountsFilter={updateBankAccountsFilter}
+                        searchByDates={searchByDates}
+                      />
+                    </Col>
+                  </Row>
+                  <hr></hr>
+                </div>
+              )}
             {(transactionState.apiCallInProgress ||
               categoryState.apiCallInProgress ||
               accountState.apiCallInProgress) && (
@@ -138,47 +143,33 @@ function TransactionsHistory(props) {
                 </Col>
               </Row>
             )}
-            {(transactionState.apiCallCompleted &&
+            {transactionState.apiCallCompleted &&
               categoryState.apiCallCompleted &&
-              accountState.apiCallCompleted) && (
-              <div>
-                <Row>
-                  <Col>
-                    {filteredTransactionItems.map(
-                      (transactionItemData, index) => (
-                        <TransactionItem
-                          {...transactionItemData}
-                          key={index}
-                          categories={categoriesMap}
-                          accounts={accountsMap}
-                        />
-                      )
-                    )}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col className="d-flex justify-content-center">
-                    <Pagination>
-                      <Pagination.First />
-                      <Pagination.Prev />
-                      <Pagination.Item key={1} active={true}>
-                        1
-                      </Pagination.Item>
-                      <Pagination.Item key={2} active={false}>
-                        2
-                      </Pagination.Item>
-                      <Pagination.Next />
-                      <Pagination.Last />
-                    </Pagination>
-                  </Col>
-                </Row>
-              </div>
-            )}
+              accountState.apiCallCompleted && (
+                <div>
+                  <Row>
+                    <Col>
+                      {filteredTransactionItems.map(
+                        (transactionItemData, index) => (
+                          <TransactionItem
+                            {...transactionItemData}
+                            key={index}
+                            categories={categoriesMap}
+                            accounts={accountsMap}
+                          />
+                        )
+                      )}
+                    </Col>
+                  </Row>
+                </div>
+              )}
             {(transactionState.apiCallError ||
               categoryState.apiCallError ||
               accountState.apiCallError) && (
-              <Alert variant="danger"  >
-                <Alert.Heading className="d-flex justify-content-center">Something went wrong on our end! :(</Alert.Heading>
+              <Alert variant="danger">
+                <Alert.Heading className="d-flex justify-content-center">
+                  Something went wrong on our end! :(
+                </Alert.Heading>
                 <p className="d-flex justify-content-center">
                   Some services are unavailabe righ now, please try again later.
                 </p>

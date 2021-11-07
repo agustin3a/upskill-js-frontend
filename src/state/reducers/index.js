@@ -6,6 +6,7 @@ import accountReducer from './accountReducer';
 import userReducer from './userReducer';
 import currencyReducer from './currencyReducer';
 import accountTypeReducer from './accountTypeReducer';
+import transferReducer from './transferReducer';
 
 export default combineReducers({
   firebase: firebaseReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   account: accountReducer,
   user: userReducer,
   currency: currencyReducer,
-  accountType : accountTypeReducer
+  accountType : accountTypeReducer,
+  transfer: transferReducer
 });
