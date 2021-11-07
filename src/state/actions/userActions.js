@@ -3,10 +3,15 @@ import {
   USER_API_CALL_ERROR,
   USER_API_CALL_STARTED,
   USER_CREATED,
-  USER_LOGOUT,
+  USER_GET_USER,
+  USER_API_CALL_RESET
 } from "./actionTypes";
 import Axios from "axios";
 Axios.defaults.baseURL = process.env.REACT_APP_BUDGET_API_URI;
+
+export const resetAPIFlags = () => async (dispatch) => {
+  dispatch({ type: USER_API_CALL_RESET });
+};
 
 export const createUser = (user,callback) => async (dispatch, getState, getFirebase) => {
   let { email, password, firstName, lastName } = user;
@@ -39,6 +44,37 @@ export const createUser = (user,callback) => async (dispatch, getState, getFireb
         dispatch({
           type: USER_API_CALL_ERROR,
           payload: error.response.data.errorMessage,
+        });
+      } else {
+        dispatch({
+          type: USER_API_CALL_ERROR,
+          payload: "Service unavailable",
+        });
+      }
+    });
+};
+
+export const getUser = () => async (dispatch, getState) => {
+  dispatch({ type: USER_API_CALL_STARTED });
+  let userToken = getState().firebase.auth.stsTokenManager.accessToken;
+  Axios.get("/user/", {
+    headers: {
+      Authorization: "Bearer " + userToken,
+    },
+  })
+    .then((response) => {
+      dispatch({
+        type: USER_GET_USER,
+        payload: response.data.user,
+      });
+      dispatch({ type: USER_API_CALL_COMPLETED });
+    })
+    .catch((error) => {
+      console.error(error);
+      if (error.response) {
+        dispatch({
+          type: USER_API_CALL_ERROR,
+          payload: error.response.data.message,
         });
       } else {
         dispatch({

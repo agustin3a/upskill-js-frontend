@@ -61,7 +61,6 @@ function BankAccountForm() {
   });
 
   const handleOnSubmit = async (values) => {
-    console.log(values);
     createAccount(values);
   };
 

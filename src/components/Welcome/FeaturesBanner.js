@@ -5,7 +5,7 @@ import { FaMoneyBillAlt, FaListAlt, FaHandHoldingUsd } from "react-icons/fa";
 function FeaturesBanner() {
   return (
     <>
-      <div className="p-4 mt-3 bg-dark text-light">
+      <div className="p-4 mt-4 bg-dark text-light">
         <Container>
           <Row className="">
             <Col className="">

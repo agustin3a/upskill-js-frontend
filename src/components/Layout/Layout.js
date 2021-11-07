@@ -5,8 +5,6 @@ import { useSelector } from "react-redux";
 
 function Layout({ exact, path, component: Component, ...props }) {
   const auth = useSelector((state) => state.firebase.auth);
-  const user = useSelector((state) => state.user);
-
   
 
   return (

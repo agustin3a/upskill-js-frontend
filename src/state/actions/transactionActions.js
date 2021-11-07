@@ -33,7 +33,7 @@ export const getLatestTransactions = () => async (dispatch, getState) => {
       if (error.response) {
         dispatch({
           type: TRANSACTION_API_CALL_ERROR,
-          payload: error.response.data.errorMessage,
+          payload: error.response.data.message,
         });
       } else {
         dispatch({
@@ -163,6 +163,41 @@ export const deleteTransaction = (id, values) => async (dispatch, getState) => {
         dispatch({
           type: TRANSACTION_API_CALL_ERROR,
           payload: error.response.data.message,
+        });
+      } else {
+        dispatch({
+          type: TRANSACTION_API_CALL_ERROR,
+          payload: "Service unavailable",
+        });
+      }
+    });
+};
+
+export const getTransactionsByDates = (dateFrom,dateTo) => async (dispatch, getState) => {
+  dispatch({ type: TRANSACTION_API_CALL_STARTED });
+  let userToken = getState().firebase.auth.stsTokenManager.accessToken;
+  Axios.get("/transactions", {
+    headers: {
+      Authorization: "Bearer " + userToken,
+    },
+    params: {
+      from: dateFrom,
+      to: dateTo
+    }
+  })
+    .then((response) => {
+      dispatch({
+        type: TRANSACTION_UPDATE_LATEST_TRANSACTIONS,
+        payload: response.data.transactions,
+      });
+      dispatch({ type: TRANSACTION_API_CALL_COMPLETED });
+    })
+    .catch((error) => {
+      console.error(error);
+      if (error.response) {
+        dispatch({
+          type: TRANSACTION_API_CALL_ERROR,
+          payload: error.response.data.errorMessage,
         });
       } else {
         dispatch({

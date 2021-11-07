@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as _ from "lodash";
-import { Col, Row, Pagination, Spinner, Card, Alert } from "react-bootstrap";
+import { Col, Row, Spinner, Card, Alert } from "react-bootstrap";
 import TransactionsHistoryFilter from "./TransactionsHistoryFilter";
 import TransactionItem from "./TransactionItem";
 import { useSelector, useDispatch } from "react-redux";
@@ -24,7 +24,7 @@ function TransactionsHistory(props) {
   const accountState = useSelector((state) => state.account);
   // Action creators
   const dispatch = useDispatch();
-  const { getLatestTransactions } = bindActionCreators(
+  const { getLatestTransactions, getTransactionsByDates } = bindActionCreators(
     transactionActionsCreators,
     dispatch
   );
@@ -40,8 +40,6 @@ function TransactionsHistory(props) {
     (state) => state.transaction.latestTransactions
   );
 
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
   // Update categories and bank accounts filter functions
   const updateCategoriesFilter = (categoriesFilter) =>
     setCategoriesFilter(categoriesFilter);
@@ -51,8 +49,10 @@ function TransactionsHistory(props) {
 
   // Search transaction by date handler
   const searchByDates = async (startDate, endDate) => {
-    await sleep(3000);
-    //setTransactionItems(generateTransactionItems(10));
+    console.log(startDate);
+    console.log(endDate);
+    //await sleep(3000);
+    getTransactionsByDates(startDate, endDate);
   };
 
   // Update transaction items list by category and bank account filters
@@ -64,7 +64,7 @@ function TransactionsHistory(props) {
         return (
           _.findIndex(categoriesFilter, [
             "value",
-            transactionItem.Category.id,
+            transactionItem.Category.description,
           ]) >= 0
         );
       });
@@ -116,7 +116,6 @@ function TransactionsHistory(props) {
         <Card.Body>
           <section>
             {props.showFilter &&
-              transactionState.apiCallCompleted &&
               categoryState.apiCallCompleted &&
               accountState.apiCallCompleted && (
                 <div>

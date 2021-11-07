@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Card, Col, Row, Button } from "react-bootstrap";
 import Select from "react-select";
 import DayPickerInput from "react-day-picker/DayPickerInput";
@@ -10,19 +10,17 @@ function TransactionsHistoryFilter(props) {
   const [inputDateTo, setInputDateTo] = useState(Moment().endOf("month"));
   const [searchErrorMessage, setSearchErrorMessage] = useState();
 
-
   const categoriesSelect = props.categories.map((category) => {
-    return { value: category.id, label: category.description };
+    return { value: category.description, label: category.description };
   });
 
   const accountsSelect = props.accounts.map((account) => {
-    return { value: account.id, label: account.Currency.code + ' - ' + account.number + ' / ' + account.holder };
+    return {
+      value: account.id,
+      label:
+        account.Currency.code + " - " + account.number + " / " + account.holder,
+    };
   });
-
-  const displayTransactionType = [
-    { value: false, label: "Income" },
-    { value: true, label: "Expense" },
-  ];
 
   // Event handlers
 
@@ -46,11 +44,12 @@ function TransactionsHistoryFilter(props) {
 
   const onSearchSubmit = () => {
     setSearchErrorMessage();
+    let format = "YYYY-MM-DD";
     let initDate = Moment(inputDateFrom);
     let endDate = Moment(inputDateTo);
     if (initDate > endDate)
       return setSearchErrorMessage("Initial date is bigger than end date");
-    props.searchByDates(initDate, endDate);
+    props.searchByDates(initDate.format(format), endDate.format(format));
   };
 
   return (
@@ -128,18 +127,6 @@ function TransactionsHistoryFilter(props) {
                   className="basic-multi-select"
                   classNamePrefix="select"
                   onChange={onChangeCategoryFilter}
-                  isMulti
-                />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group className="mb-3" controlId="formTypeFilter">
-                <Form.Label>Income/Expense</Form.Label>
-                <Select
-                  name="transactionType"
-                  options={displayTransactionType}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
                   isMulti
                 />
               </Form.Group>

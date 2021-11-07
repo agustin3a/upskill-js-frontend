@@ -7,7 +7,6 @@ import * as accountActionsCreators from "../../state/actions/accountActions";
 import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { FaRegEdit } from "react-icons/fa";
-import * as _ from "lodash";
 
 function BankAccounts(props) {
   const dispatch = useDispatch();
@@ -34,7 +33,7 @@ function BankAccounts(props) {
               </Col>
             </Row>
           )}
-          {accountState.apiCallCompleted && accounts.length == 0 && (
+          {accountState.apiCallCompleted && accounts.length === 0 && (
             <MissingAccountMessage />
           )}
           {accountState.apiCallCompleted && accounts.length > 0 && (

@@ -1,6 +1,6 @@
 import React from "react";
-import { FaCheckCircle, FaPlus, FaListUl } from "react-icons/fa";
-import { Row, Col, Button, Alert } from "react-bootstrap";
+import { FaListUl } from "react-icons/fa";
+import { Row, Col, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Moment from "moment";
 

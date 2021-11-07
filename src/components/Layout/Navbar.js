@@ -13,7 +13,6 @@ import { useFirebase } from "react-redux-firebase";
 function Navbar() {
   const firebase = useFirebase();
   const auth = useSelector((state) => state.firebase.auth);
-  const user = useSelector((state) => state.user);
   const history = useHistory();
 
   const handleLogout = async (e) => {
@@ -21,19 +20,14 @@ function Navbar() {
     try {
       firebase.logout();
       history.push("/");
-    } catch(error) {
+    } catch (error) {
       console.error(error);
     }
   };
 
   return (
     <>
-      <BootstrapNavbar
-        expand="lg"
-        bg="dark"
-        variant="dark"
-        className="mb-3"
-      >
+      <BootstrapNavbar expand="lg" bg="dark" variant="dark" className="mb-3">
         <Container>
           <Link
             className="navbar-brand"
@@ -62,10 +56,9 @@ function Navbar() {
               </Nav>
               <Nav className="me-right">
                 <NavDropdown
-                  title={!auth.isEmpty && auth.email }
+                  title={!auth.isEmpty && auth.email}
                   id="navbarScrollingDropdown"
                 >
-                  <NavDropdown.Item href="#action3">Settings</NavDropdown.Item>
                   <NavDropdown.Divider />
                   <NavDropdown.Item onClick={handleLogout}>
                     Log out
@@ -74,7 +67,6 @@ function Navbar() {
               </Nav>
             </>
           )}
-          
         </Container>
       </BootstrapNavbar>
     </>
